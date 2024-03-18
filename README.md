@@ -6,7 +6,9 @@ An experimental ray-tracer to generate a shadow overlay for virtual pinball play
 ### Current State
 At this point it is a very user-unfriendly tool with hard-coded values to generate a ray-traced image of shadows for the pinball table "Slick Chick". The output appears below:
 
+<p align="center">
 <img src="https://github.com/EngineersNeedArt/ShadowDrome/blob/d72e3c28896b797971508ac2ce160075075bfb75/Images/slick_chick_shadows.png">
+</p>
 
 ### How it Works
 
@@ -22,7 +24,12 @@ First, the pixel's `x` and `y` location within the bitmap are tested as to wheth
 
 If however the pixel is not enclosed, a line segment for each light source (`Lamp`) is calculated and the intersection with every vertex of every `Obstacle` polygon is tested. In other words, is there a direct line-of-sight between the pixel and a given `Lamp`? Or is there an `Obstacle` blocking the light?
 
-As in the above enclosed case, if there is an edge of an `Obstacle` polygon blocking the light, the luminosity contributed by that light is zero and it will remain black. However we are not necessarily done with the pixel because there are often multiple light sources and we need to calculate the contribution of light from all sources.
+<p align="center">
+<img width="1200" src="https://github.com/EngineersNeedArt/ShadowDrome/blob/1e8c5aaca1513d11dc7c39c1968e7906c7eb3d82/Images/Diagram1.jpg">
+<i>A pixel luminosity being considered with lines to two lamps, Lamp 0 is blocked by an obstacle, Lamp 1 is not.</i>
+</p>
+
+As in the previous enclosed case, if there is an edge of an `Obstacle` polygon blocking the light, the luminosity contributed by that light is zero and it will remain black. However we are not necessarily done with the pixel because there are often multiple light sources and we need to calculate the contribution of light from all sources.
 
 If on the other hand there is a direct, uninterrupted line to a light source, a luminosity value is calculated using the inverse-square law (the inverse of the distance the pixel is from the light source). But also as above, we must continue through all the other light sources in the `ShadowContext` to get the combined luminosity from *all* `Lamps` in order to determine the value for the pixel.
 
