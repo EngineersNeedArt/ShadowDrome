@@ -7,7 +7,7 @@ An experimental ray-tracer to generate a shadow overlay for virtual pinball play
 At this point it is a very user-unfriendly tool with hard-coded values to generate a ray-traced image of shadows for the pinball table "Slick Chick". The output appears below:
 
 <p align="center">
-<img src="https://github.com/EngineersNeedArt/ShadowDrome/blob/48955666e338895c3e1af8b04d975974db07b5a1/Images/SlickChickAndShadows.jpg">
+<img src="https://github.com/EngineersNeedArt/ShadowDrome/blob/a315ba509c817255a4ec163d757defa3ad013aa1/Images/SlickChickAndShadows.jpg">
   <br>
 <i>Slick Chick table on left, ray-traced shadow map on right.</i>
 </p>
