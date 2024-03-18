@@ -706,7 +706,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="946-6D-3xQ">
-                                                    <rect key="frame" x="3" y="-131" width="384" height="768"/>
+                                                    <rect key="frame" x="3" y="0.0" width="384" height="768"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" id="Y0m-eo-hkF"/>
                                                 </imageView>
@@ -716,7 +716,7 @@
                                             <rect key="frame" x="1" y="763" width="517" height="15"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
-                                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="tZX-DV-6Di">
+                                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="tZX-DV-6Di">
                                             <rect key="frame" x="518" y="1" width="15" height="762"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
@@ -810,7 +810,7 @@
                                             </subviews>
                                         </clipView>
                                         <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="dL4-nN-MDw">
-                                            <rect key="frame" x="1" y="520" width="313" height="15"/>
+                                            <rect key="frame" x="1" y="763" width="525" height="15"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                         <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="MkJ-mJ-hoC">
@@ -831,9 +831,9 @@
                         </holdingPriorities>
                     </splitView>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5oY-bN-T8j">
-                        <rect key="frame" x="13" y="13" width="75" height="32"/>
+                        <rect key="frame" x="14" y="13" width="74" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="550-7l-o8n">
+                        <buttonCell key="cell" type="push" title="Save…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="550-7l-o8n">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>

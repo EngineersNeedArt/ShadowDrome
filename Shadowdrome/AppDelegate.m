@@ -22,7 +22,16 @@
 BMContext *bitmap;
 SDContext *shadowContext;
 
+- (void) test0 {
+	shadowContext->tempScalar = 200000;
+	
+	sdContextAddLamp (shadowContext, lampCreate (450, 990));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (550, 1010, 10));
+}
+
 - (void) addSlickChickLightsAndObstacles {
+	shadowContext->tempScalar = 40000;
+	
 	// Lights.
 	sdContextAddLamp (shadowContext, lampCreate (436, 421));
 	sdContextAddLamp (shadowContext, lampCreate (80, 784));
@@ -40,8 +49,8 @@ SDContext *shadowContext;
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (430, 798, 40));
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (290, 946, 40));
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (576, 950, 40));
-//	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (158, 1099, 40));
-	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (150, 1099, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (158, 1099, 40));
+//	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (150, 1099, 40));
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (720, 1101, 40));
 	
 	// Pegs
@@ -229,15 +238,16 @@ SDContext *shadowContext;
 
 - (void) applicationDidFinishLaunching: (NSNotification *) aNotification {
 	// Create bitmap context.
-	int bitmapWidth = 128; 	// 512;
-	int bitmapHeight = 256;	// 1024;
+	int bitmapWidth = 256; 	// 512;
+	int bitmapHeight = 512;	// 1024;
 	bitmap = bmContextCreate (bitmapWidth, bitmapHeight);
 	
 	// Create ShadowContext.
 	shadowContext = sdContextCreate (1024, 2048);
 	
+	[self test0];
 //	[self addKingOfDiamondsLightsAndObstacles];
-	[self addSlickChickLightsAndObstacles];
+//	[self addSlickChickLightsAndObstacles];
 	
 	[self renderPlayfield];
 }
