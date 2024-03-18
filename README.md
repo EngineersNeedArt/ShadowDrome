@@ -42,4 +42,10 @@ When we finaly have our composite luminosity value it is only applied to the alp
 
 If I had treated the `Lamps` as point-sources, there would have been very hard edges on the shadows rendered. Because light bulbs are not point-sources (there is a filament that has some width, never mind the globe of the bulb) I had to add extra steps to calculate lines-of-sight not just for the `x` and `y` of each `Lamp` but also for points perpendicular to the path to the lamp some distance to one side of the line and the other. This is why the `Lamp` has a radius - it indicates how far out from center to make additional line-of-sight tests.
 
+<p align="center">
+<img width="450" src="https://github.com/EngineersNeedArt/ShadowDrome/blob/425157493b331ad5b5cd677be6188ec1877ffd73/Images/Diagram2.jpg">
+  <br>
+<i>Diagram showing the line-of-sight for 3 different points on a line perpendicular to the pixel-under-test. In this illustration, only 2/3 of the light reaches the pixel. In practice, depending on the lamp radius, it is closer to a dozen (closely spaced) points tested.</i>
+</p>
+
 By adding all the results of all these extra line-of-sight tests to the luminosity for each pixel you can imagine now how the penumbra forms. For pixels clearly in full gaze of the lamp, they will be fully lit. And similarly, pixels fully obscured from all points of the lamp even when the lamp radius is allowed, are completely in shadow. However, we have now introduced the edge cases where some fraction of the lamp is visible from the vantage point of the pixel, but not all. These pixels get only a proportional amount of illumination from the lamp and will "feather" the edges of the shadows.
