@@ -25,8 +25,9 @@ First, the pixel's `x` and `y` location within the bitmap are tested as to wheth
 If however the pixel is not enclosed, a line segment for each light source (`Lamp`) is calculated and the intersection with every vertex of every `Obstacle` polygon is tested. In other words, is there a direct line-of-sight between the pixel and a given `Lamp`? Or is there an `Obstacle` blocking the light?
 
 <p align="center">
-<img width="1200" src="https://github.com/EngineersNeedArt/ShadowDrome/blob/1e8c5aaca1513d11dc7c39c1968e7906c7eb3d82/Images/Diagram1.jpg">
-<i>A pixel luminosity being considered with lines to two lamps, Lamp 0 is blocked by an obstacle, Lamp 1 is not.</i>
+<img width="600" src="https://github.com/EngineersNeedArt/ShadowDrome/blob/e905c9ed3cd2adc68bee64f35212d8c1770c882e/Images/Diagram1.jpg">
+  <br>
+<i>Pixel luminosity being considered with lines to two lamps, Lamp 0 is blocked by an obstacle, Lamp 1 is not.</i>
 </p>
 
 As in the previous enclosed case, if there is an edge of an `Obstacle` polygon blocking the light, the luminosity contributed by that light is zero and it will remain black. However we are not necessarily done with the pixel because there are often multiple light sources and we need to calculate the contribution of light from all sources.
