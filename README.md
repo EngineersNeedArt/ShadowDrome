@@ -1,9 +1,16 @@
 # ShadowDrome
 
 ### Description
-An experimental ray-tracer to generate a shadow overlay for virtual pinball playfields.
+<i>An experimental ray-tracer to generate a shadow overlay for virtual pinball playfields.</i>
+
+Visual Pinball (VPX) is getting to be a pretty sophisticated open-source, virtual pinball game with over 1000 user-created tables along with pinball backglass files and other support files. One thing table creators do to help a pinball table achieve another level of realism is to add the shadows that you might get with all the lights and obstacles on a pinball table. While the VPX software itself can handle a good deal of rendering a dynamic pinball table, ray-tracing shadows is something still out of its reach.
+
+To that end table creators pre-render these shadows. If you have the time and know-how, you can model the table in Blender and can achieve perhaps shadows as good as is possible. If instead you have the skills with using paint tools like Photoshop or Affinity Photo you can achieve a more stylish representation of a pinball table's shadows and add to the realism that way.
+
+This project was an experiment to see what a simple ray-tracer-like app could do to calculate those shadows without the complexity of Blender or requiring art skills. It does require the position of the lights and obstacles on the pinball table be specified and then it calculates the resulting illumination for each pixel on a bitmap (representing pixels on the playfield). It saves the resulting shadow map as a PNG file (luminosity is represented in the alpha channel of the bitmap).
 
 ### Current State
+
 At this point it is a very user-unfriendly tool with hard-coded values to generate a ray-traced image of shadows for the pinball table "Slick Chick". The output appears below:
 
 <p align="center">
@@ -36,7 +43,7 @@ As in the previous enclosed case, if there is an edge of an `Obstacle` polygon b
 
 If on the other hand there is a direct, uninterrupted line to a light source, a luminosity value is calculated using the inverse-square law (the inverse of the distance the pixel is from the light source). But also as above, we must continue through all the other light sources in the `ShadowContext` to get the combined luminosity from *all* `Lamps` in order to determine the value for the pixel.
 
-When we finaly have our composite luminosity value it is only applied to the alpha value of the pixel. Again the pixel is black by default but if suitably lit it may have an alpha value as low as zero (indicating the pixel is completely transparent and contributes no shadow to the pinball table).
+When we finally have our composite luminosity value it is only applied to the alpha value of the pixel. Again the pixel is black by default but if suitably lit it may have an alpha value as low as zero (indicating the pixel is completely transparent and contributes no shadow to the pinball table).
 
 ### Penumbra
 
@@ -49,3 +56,15 @@ If I had treated the `Lamps` as point-sources, there would have been very hard e
 </p>
 
 By adding all the results of all these extra line-of-sight tests to the luminosity for each pixel you can imagine now how the penumbra forms. For pixels clearly in full gaze of the lamp, they will be fully lit. And similarly, pixels fully obscured from all points of the lamp even when the lamp radius is allowed, are completely in shadow. However, we have now introduced the edge cases where some fraction of the lamp is visible from the vantage point of the pixel, but not all. These pixels get only a proportional amount of illumination from the lamp and will "feather" the edges of the shadows.
+
+### Future State
+
+So much to do still. At the very least I would like to read (write?) some kind of file-representation of a table's lights and obstacles. In that way other tools can be used to create the specification files and **ShadowDrome** can just render. (Either a UI front end to create the file or better still some means to parse a VPX table and extract the relevant information.) I'm picturing a simple JSON or XML specification.
+
+But building a front end editor would be very cool. If you could pull in the playfield artwork for a table as a reference to help you then add lights, obstacles from a tool menu or palette. Drag lights around, resize obstacles, create arbitrary polygons. Then go in and change the intensity of the lights....
+
+Performance is extremely lacking in the code. Only the most obvious performance optimizations were implemented: like the initial test to see if a pixel is enclosed by an obstacle, or returning when the first edge of a polygon is found to intersect a line-of-sight line segment. Since the calculation is so "parallelizable", a low hanging fruit would be to spawn as many threads as the CPU it is running on has cores. For my MacBook (8 cores) I would see almost an order of magnitude speed boost.
+
+As hinted at earlier, adding a 3rd dimension to the ray-tracing would allow more complex but realistic shadow generation. As an example, many pinball tables have a round target whose shadow ought to be an elongated ellipse, not a frustum as the current implementation would generate.
+
+Anyway, I could go on, but the above are probably my short list of features.
