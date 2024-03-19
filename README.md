@@ -14,7 +14,7 @@ This project was an experiment to see what a simple ray-tracer-like app could do
 At this point it is a very user-unfriendly tool with hard-coded values to generate a ray-traced image of shadows for the pinball table "Slick Chick". The output appears below:
 
 <p align="center">
-<img src="https://github.com/EngineersNeedArt/ShadowDrome/blob/a315ba509c817255a4ec163d757defa3ad013aa1/Images/SlickChickAndShadows.jpg">
+<img src="https://github.com/EngineersNeedArt/ShadowDrome/blob/ff1d766c13492eaf3de062e49f511090166c9bb6/Images/SlickChickAndShadows.jpg">
   <br>
 <i>Slick Chick table on left, ray-traced shadow map on right.</i>
 </p>
