@@ -107,17 +107,17 @@ SDContext *shadowContext;
 	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (461, 1727, 850, 1509, 850, 2048, 461, 2048));
 	
 	// Arch.
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (38, 384, 0, 400, 0, 0, 38, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (97, 246, 38, 384, 38, 0, 97, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (166, 161, 97, 246, 97, 0, 166, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (257, 94, 166, 161, 166, 0, 257, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (383, 51, 257, 94, 257, 0, 383, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (527, 45, 383, 51, 383, 0, 527, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (630, 64, 527, 45, 527, 0, 630, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (730, 106, 630, 64, 630, 0, 730, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (816, 179, 730, 106, 730, 0, 816, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (895, 301, 816, 179, 816, 0, 895, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (936, 418, 895, 301, 895, 0, 936, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (38, 384 - 12, 0, 400 - 12, 0, 0, 38, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (97, 246 - 12, 38, 384 - 12, 38, 0, 97, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (166, 161 - 12, 97, 246 - 12, 97, 0, 166, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (257, 94 - 12, 166, 161 - 12, 166, 0, 257, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (383, 51 - 12, 257, 94 - 12, 257, 0, 383, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (527, 45 - 12, 383, 51 - 12, 383, 0, 527, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (630, 64 - 12, 527, 45 - 12, 527, 0, 630, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (730, 106 - 12, 630, 64 - 12, 630, 0, 730, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (816, 179 - 12, 730, 106 - 12, 730, 0, 816, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (895, 301 - 12, 816, 179 - 12, 816, 0, 895, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (936, 418 - 12, 895, 301 - 12, 895, 0, 936, 0));
 }
 
 - (void) addKingOfDiamondsLightsAndObstacles {
