@@ -50,7 +50,7 @@ When we finally have our composite luminosity value it is only applied to the al
 If I had treated the `Lamps` as point-sources, there would have been very hard edges on the shadows rendered. Because light bulbs are not point-sources (there is a filament that has some width, never mind the globe of the bulb) I had to add extra steps to calculate lines-of-sight not just for the `x` and `y` of each `Lamp` but also for points perpendicular to the path to the lamp some distance to one side of the line and the other. This is why the `Lamp` has a radius - it indicates how far out from center to make additional line-of-sight tests.
 
 <p align="center">
-<img width="450" src="https://github.com/EngineersNeedArt/ShadowDrome/blob/425157493b331ad5b5cd677be6188ec1877ffd73/Images/Diagram2.jpg">
+<img width="450" src="https://github.com/EngineersNeedArt/ShadowDrome/blob/af38b5c9b3e6df7d3c9ac877045bb66987b3c3cd/Images/Diagram2.jpg">
   <br>
 <i>Diagram showing the line-of-sight for 3 different points on a line perpendicular to the pixel-under-test. In this illustration, only 2/3 of the light reaches the pixel. In practice, depending on the lamp radius, it is closer to a dozen (closely spaced) points tested.</i>
 </p>
