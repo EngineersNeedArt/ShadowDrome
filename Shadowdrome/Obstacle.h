@@ -25,6 +25,10 @@ Obstacle *obstacleCreateQuadPrism (double x0, double y0, double x1, double y1, d
 // Pass top left corner (x0, y0) and bottom right corner (x1, y1).
 Obstacle *obstacleCreateRectangluarPrism (double x0, double y0, double x1, double y1);
 
+// Pass center (x, y), width, height and rotation (in degrees) of the rectabgular prism.
+Obstacle *obstacleCreateRotatedRectangularPrism (double x, double y, double width, double height, double rotationDegrees);
+
+// Pass the center (x, y), and raius of the cylinder.
 Obstacle *obstacleCreateCylinder (double x, double y, double radius);
 
 

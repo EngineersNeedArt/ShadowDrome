@@ -128,6 +128,103 @@ Obstacle *obstacleCreateRectangluarPrism (double x0, double y0, double x1, doubl
 	return obstacle;
 }
 
+Obstacle *obstacleCreateRotatedRectangularPrism (double x, double y, double width, double height, double rotationDegrees) {
+	Obstacle *obstacle = malloc (sizeof(Obstacle));
+	obstacle->xLoc = x;
+	obstacle->yLoc = y;
+	
+	obstacle->minX = x;
+	obstacle->minY = y;
+	obstacle->maxX = x;
+	obstacle->maxY = y;
+	
+	obstacle->numVertices = 4;
+	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
+	double *vertexPtr = obstacle->vertexArray;
+	double angle = rotationDegrees / 180.0 * M_PI;
+	
+//	x' = x * cos(theta) - y * sin(theta)
+//	y' = x * sin(theta) + y * cos(theta)
+	
+	double xV = ((width / 2.0) * cos (angle)) - ((-height / 2.0) * sin (angle));
+	double yV = ((width / 2.0) * sin (angle)) + ((-height / 2.0) * cos (angle));
+	*vertexPtr = x + xV;
+	if (*vertexPtr < obstacle->minX) {
+		obstacle->minX = *vertexPtr;
+	}
+	if (*vertexPtr > obstacle->maxX) {
+		obstacle->maxX = *vertexPtr;
+	}
+	vertexPtr++;
+	*vertexPtr = y + yV;
+	if (*vertexPtr < obstacle->minY) {
+		obstacle->minY = *vertexPtr;
+	}
+	if (*vertexPtr > obstacle->maxY) {
+		obstacle->maxY = *vertexPtr;
+	}
+	vertexPtr++;
+	
+	xV = ((width / 2.0) * cos (angle)) - ((height / 2.0) * sin (angle));
+	yV = ((width / 2.0) * sin (angle)) + ((height / 2.0) * cos (angle));
+	*vertexPtr = x + xV;
+	if (*vertexPtr < obstacle->minX) {
+		obstacle->minX = *vertexPtr;
+	}
+	if (*vertexPtr > obstacle->maxX) {
+		obstacle->maxX = *vertexPtr;
+	}
+	vertexPtr++;
+	*vertexPtr = y + yV;
+	if (*vertexPtr < obstacle->minY) {
+		obstacle->minY = *vertexPtr;
+	}
+	if (*vertexPtr > obstacle->maxY) {
+		obstacle->maxY = *vertexPtr;
+	}
+	vertexPtr++;
+	
+	xV = ((-width / 2.0) * cos (angle)) - ((height / 2.0) * sin (angle));
+	yV = ((-width / 2.0) * sin (angle)) + ((height / 2.0) * cos (angle));
+	*vertexPtr = x + xV;
+	if (*vertexPtr < obstacle->minX) {
+		obstacle->minX = *vertexPtr;
+	}
+	if (*vertexPtr > obstacle->maxX) {
+		obstacle->maxX = *vertexPtr;
+	}
+	vertexPtr++;
+	*vertexPtr = y + yV;
+	if (*vertexPtr < obstacle->minY) {
+		obstacle->minY = *vertexPtr;
+	}
+	if (*vertexPtr > obstacle->maxY) {
+		obstacle->maxY = *vertexPtr;
+	}
+	vertexPtr++;
+	
+	xV = ((-width / 2.0) * cos (angle)) - ((-height / 2.0) * sin (angle));
+	yV = ((-width / 2.0) * sin (angle)) + ((-height / 2.0) * cos (angle));
+	*vertexPtr = x + xV;
+	if (*vertexPtr < obstacle->minX) {
+		obstacle->minX = *vertexPtr;
+	}
+	if (*vertexPtr > obstacle->maxX) {
+		obstacle->maxX = *vertexPtr;
+	}
+	vertexPtr++;
+	*vertexPtr = y + yV;
+	if (*vertexPtr < obstacle->minY) {
+		obstacle->minY = *vertexPtr;
+	}
+	if (*vertexPtr > obstacle->maxY) {
+		obstacle->maxY = *vertexPtr;
+	}
+//	vertexPtr++;
+	
+	return obstacle;
+}
+
 Obstacle *obstacleCreateCylinder (double x, double y, double radius) {
 	Obstacle *obstacle = malloc (sizeof(Obstacle));
 	obstacle->xLoc = x;

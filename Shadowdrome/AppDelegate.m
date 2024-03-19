@@ -53,6 +53,11 @@ SDContext *shadowContext;
 //	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (150, 1099, 40));
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (720, 1101, 40));
 	
+	// Targets.
+	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (111, 825, 40, 2, -40));
+	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (756, 830, 40, 2, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (434, 465, 40, 2, 0));
+
 	// Pegs
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (333, 300, 8));
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (275, 409, 8));
@@ -245,9 +250,9 @@ SDContext *shadowContext;
 	// Create ShadowContext.
 	shadowContext = sdContextCreate (1024, 2048);
 	
-	[self test0];
+//	[self test0];
 //	[self addKingOfDiamondsLightsAndObstacles];
-//	[self addSlickChickLightsAndObstacles];
+	[self addSlickChickLightsAndObstacles];
 	
 	[self renderPlayfield];
 }
