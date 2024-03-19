@@ -15,7 +15,10 @@ typedef struct {
 	double intensity;
 } Lamp;
 
+/// Creates a lamp at point x, y.
 Lamp *lampCreate (double x, double y);
 
+/// Free storage for lamp.
+void lampFree (Lamp *lamp);
 
 #endif /* Lamp_h */

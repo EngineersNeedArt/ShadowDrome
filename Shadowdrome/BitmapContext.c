@@ -106,3 +106,18 @@ void bmContextSetPixel (BMContext *context, int x, int y, unsigned char red, uns
 		pixelPtr++;
 	}
 }
+
+void bmContextFree (BMContext *context) {
+	// NOP.
+	if (context == NULL) {
+		return;
+	}
+	
+	// Free buffer.
+	if (context->buffer) {
+		free (context->buffer);
+	}
+	context->buffer = NULL;
+	
+	free (context);
+}

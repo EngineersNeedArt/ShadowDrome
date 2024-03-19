@@ -12,6 +12,8 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
+#pragma mark - Private
+
 int _sdCCW (double x0, double y0, double x1, double y1, double x2, double y2) {
 	return ((y2 - y0) * (x1 - x0)) > ((y1 - y0) * (x2 - x0));
 }
@@ -31,52 +33,6 @@ int _sdIntersects2 (double x0, double y0, double x1, double y1, double x2, doubl
 	double p2 = dy0 * (x1 - x2) - dx0 * (y1 - y2);
 	double p3 = dy0 * (x1 - x3) - dx0 * (y1 - y3);
 	return ((p0 * p1) <= 0) & ((p2 * p3) <= 0);
-}
-
-// A relative pixel x and y are passed in as is the lamp. Returns normalX and normalY.
-// The normal is perpindicular to the line connecting the pixel to the lamp center.
-// The normal is scaled to the lamp radius.
-
-void _sdLampTangent (int pixelX, int pixelY, Lamp *lamp, double *t1X, double *t1Y) {
-	double dX = pixelX - lamp->xLoc;
-	double dY = pixelY - lamp->yLoc;
-	double distance = sqrt ((dX * dX) + (dY * dY));
-	double scale = lamp->radius / distance;
-	
-	/*
-	 from math import sqrt
-	 # Data Section, change as you need #
-	 Cx, Cy = -2, -7                    #
-	 r = 5                              #
-	 Px, Py =  4, -3                    #
-	 # ################################ #
-	 dx, dy = Px-Cx, Py-Cy
-	 dxr, dyr = -dy, dx
-	 d = sqrt(dx**2+dy**2)
-	 if d >= r :
-		 rho = r/d
-		 ad = rho**2
-		 bd = rho*sqrt(1-rho**2)
-		 T1x = Cx + ad*dx + bd*dxr
-		 T1y = Cy + ad*dy + bd*dyr
-		 T2x = Cx + ad*dx - bd*dxr
-		 T2y = Cy + ad*dy - bd*dyr
-
-		 print('The tangent points:')
-		 print('\tT1≡(%g,%g),  T2≡(%g,%g).'%(T1x, T1y, T2x, T2y))
-		 if (d/r-1) < 1E-8:
-			 print('P is on the circumference')
-		 else:
-			 print('The equations of the lines P-T1 and P-T2:')
-			 print('\t%+g·y%+g·x%+g = 0'%(T1x-Px, Py-T1y, T1y*Px-T1x*Py))
-			 print('\t%+g·y%+g·x%+g = 0'%(T2x-Px, Py-T2y, T2y*Px-T2x*Py))
-	 else:
-		 print('''\
-	 Point P≡(%g,%g) is inside the circle with centre C≡(%g,%g) and radius r=%g.
-	 No tangent is possible...''' % (Px, Py, Cx, Cy, r))
-	 */
-//	*normalX = -dY * scale;
-//	*normalY = dX * scale;
 }
 
 // A relative pixel x and y are passed in as is the lamp. Returns normalX and normalY.
@@ -137,6 +93,10 @@ int _sdPointInObstacle (double x, double y, Obstacle *obstacle) {
 int _sdTestObstacleCollsion (SDContext *context, double x0, double y0, double x1, double y1) {
 	Obstacle *obstaclePtr = context->obstacleArray;
 	for (int o = 0; o < context->obstacleCount; o++) {
+		if (obstaclePtr->role == ObstacleRoleVoidsShadows) {
+			obstaclePtr++;
+			continue;
+		}
 		double *vertexPtr = obstaclePtr->vertexArray;
 		double xOrig = *vertexPtr;
 		vertexPtr++;
@@ -210,10 +170,21 @@ double _sdContextGetLuminanceForPoint (SDContext *context, double x, double y) {
 	Obstacle *obstaclePtr = context->obstacleArray;
 	for (int o = 0; o < context->obstacleCount; o++) {
 		if (_sdPointInObstacle (x, y, obstaclePtr)) {
-			return 0;
+			if (obstaclePtr->role == ObstacleRoleVoidsShadows) {
+				return 255.0;
+			}
+			return 0.0;
 		}
 		obstaclePtr++;
 	}
+	
+//	Voided *voidedPtr = context->voidedArray;
+//	for (int o = 0; o < context->voidedCount; o++) {
+//		if (_sdPointInVoid (x, y, voidedPtr)) {
+//			return 255.0;
+//		}
+//		voidedPtr++;
+//	}
 	
 	Lamp *lampPtr = context->lampArray;
 	for (int l = 0; l < context->lampCount; l++) {
@@ -308,4 +279,27 @@ int sdContextRenderToBitmap (SDContext *context, BMContext *bitmap) {
 		}
 	}
 	return 1;
+}
+
+void sdContextFree (SDContext *context) {
+	// NOP.
+	if (context == NULL) {
+		return;
+	}
+	
+	// Free lamps.
+	if (context->lampArray) {
+		free (context->lampArray);
+	}
+	context->lampArray = NULL;
+	context->lampCount = 0;
+	
+	// Free obstacles.
+	if (context->obstacleArray) {
+		free (context->obstacleArray);
+	}
+	context->obstacleArray = NULL;
+	context->obstacleCount = 0;
+	
+	free (context);
 }

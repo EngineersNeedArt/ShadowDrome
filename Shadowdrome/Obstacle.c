@@ -6,259 +6,244 @@
 #include <stdlib.h>
 #include "Obstacle.h"
 
-Obstacle *obstacleCreateQuadPrism (double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) {
+#pragma mark - Private
+
+Obstacle *_obstacleCreateBase (void) {
 	Obstacle *obstacle = malloc (sizeof(Obstacle));
-	obstacle->xLoc = (x0 + x1 + x2 + x3) / 4.0;
-	obstacle->yLoc = (y0 + y1 + y2 + y3) / 4.0;
-	
-	obstacle->minX = x0;
-	obstacle->minY = y0;
-	obstacle->maxX = x0;
-	obstacle->maxY = y0;
-	
-	obstacle->numVertices = 4;
-	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
-	
-	double *vertexPtr = obstacle->vertexArray;
-	*vertexPtr = x0;
-	if (x0 < obstacle->minX) {
-		obstacle->minX = x0;
-	}
-	if (x0 > obstacle->maxX) {
-		obstacle->maxX = x0;
-	}
-	vertexPtr++;
-	*vertexPtr = y0;
-	if (y0 < obstacle->minY) {
-		obstacle->minY = y0;
-	}
-	if (y0 > obstacle->maxY) {
-		obstacle->maxY = y0;
-	}
-	vertexPtr++;
-	
-	*vertexPtr = x1;
-	if (x1 < obstacle->minX) {
-		obstacle->minX = x1;
-	}
-	if (x1 > obstacle->maxX) {
-		obstacle->maxX = x1;
-	}
-	vertexPtr++;
-	*vertexPtr = y1;
-	if (y1 < obstacle->minY) {
-		obstacle->minY = y1;
-	}
-	if (y1 > obstacle->maxY) {
-		obstacle->maxY = y1;
-	}
-	vertexPtr++;
-	
-	*vertexPtr = x2;
-	if (x2 < obstacle->minX) {
-		obstacle->minX = x2;
-	}
-	if (x2 > obstacle->maxX) {
-		obstacle->maxX = x2;
-	}
-	vertexPtr++;
-	*vertexPtr = y2;
-	if (y2 < obstacle->minY) {
-		obstacle->minY = y2;
-	}
-	if (y2 > obstacle->maxY) {
-		obstacle->maxY = y2;
-	}
-	vertexPtr++;
-	
-	*vertexPtr = x3;
-	if (x3 < obstacle->minX) {
-		obstacle->minX = x3;
-	}
-	if (x3 > obstacle->maxX) {
-		obstacle->maxX = x3;
-	}
-	vertexPtr++;
-	*vertexPtr = y3;
-	if (y3 < obstacle->minY) {
-		obstacle->minY = y3;
-	}
-	if (y3 > obstacle->maxY) {
-		obstacle->maxY = y3;
-	}
-	vertexPtr++;
+	obstacle->kind = ObstacleKindPolygonalPrism;
+	obstacle->role = ObstacleRoleBlocksLight;
+	obstacle->xCenter = 0.0;
+	obstacle->yCenter = 0.0;
+	obstacle->radius = 0.0;
+	obstacle->rotationDegrees = 0.0;
+	obstacle->minX = 0.0;
+	obstacle->minY = 0.0;
+	obstacle->maxX = 0.0;
+	obstacle->maxY = 0.0;
 	
 	return obstacle;
 }
 
-Obstacle *obstacleCreateRectangluarPrism (double x0, double y0, double x1, double y1) {
-	Obstacle *obstacle = malloc (sizeof(Obstacle));
-	obstacle->xLoc = x0 + x1 / 2.0;
-	obstacle->yLoc = y0 + y1 / 2.0;
-	
-	obstacle->minX = x0;
-	obstacle->minY = y0;
-	obstacle->maxX = x1;
-	obstacle->maxY = y1;
-	
-	obstacle->numVertices = 4;
-	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
-	
+void _obstacleAssignCenterMinMaxBounds (Obstacle *obstacle) {
 	double *vertexPtr = obstacle->vertexArray;
-	*vertexPtr = x0;
-	vertexPtr++;
-	*vertexPtr = y0;
-	vertexPtr++;
+	double totalX = 0.0;
+	double totalY = 0.0;
 	
-	*vertexPtr = x1;
-	vertexPtr++;
-	*vertexPtr = y0;
-	vertexPtr++;
-	
-	*vertexPtr = x1;
-	vertexPtr++;
-	*vertexPtr = y1;
-	vertexPtr++;
-	
-	*vertexPtr = x0;
-	vertexPtr++;
-	*vertexPtr = y1;
-	vertexPtr++;
-	
-	return obstacle;
-}
-
-Obstacle *obstacleCreateRotatedRectangularPrism (double x, double y, double width, double height, double rotationDegrees) {
-	Obstacle *obstacle = malloc (sizeof(Obstacle));
-	obstacle->xLoc = x;
-	obstacle->yLoc = y;
-	
-	obstacle->minX = x;
-	obstacle->minY = y;
-	obstacle->maxX = x;
-	obstacle->maxY = y;
-	
-	obstacle->numVertices = 4;
-	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
-	double *vertexPtr = obstacle->vertexArray;
-	double angle = rotationDegrees / 180.0 * M_PI;
-	
-//	x' = x * cos(theta) - y * sin(theta)
-//	y' = x * sin(theta) + y * cos(theta)
-	
-	double xV = ((width / 2.0) * cos (angle)) - ((-height / 2.0) * sin (angle));
-	double yV = ((width / 2.0) * sin (angle)) + ((-height / 2.0) * cos (angle));
-	*vertexPtr = x + xV;
-	if (*vertexPtr < obstacle->minX) {
-		obstacle->minX = *vertexPtr;
-	}
-	if (*vertexPtr > obstacle->maxX) {
-		obstacle->maxX = *vertexPtr;
-	}
-	vertexPtr++;
-	*vertexPtr = y + yV;
-	if (*vertexPtr < obstacle->minY) {
-		obstacle->minY = *vertexPtr;
-	}
-	if (*vertexPtr > obstacle->maxY) {
-		obstacle->maxY = *vertexPtr;
-	}
-	vertexPtr++;
-	
-	xV = ((width / 2.0) * cos (angle)) - ((height / 2.0) * sin (angle));
-	yV = ((width / 2.0) * sin (angle)) + ((height / 2.0) * cos (angle));
-	*vertexPtr = x + xV;
-	if (*vertexPtr < obstacle->minX) {
-		obstacle->minX = *vertexPtr;
-	}
-	if (*vertexPtr > obstacle->maxX) {
-		obstacle->maxX = *vertexPtr;
-	}
-	vertexPtr++;
-	*vertexPtr = y + yV;
-	if (*vertexPtr < obstacle->minY) {
-		obstacle->minY = *vertexPtr;
-	}
-	if (*vertexPtr > obstacle->maxY) {
-		obstacle->maxY = *vertexPtr;
-	}
-	vertexPtr++;
-	
-	xV = ((-width / 2.0) * cos (angle)) - ((height / 2.0) * sin (angle));
-	yV = ((-width / 2.0) * sin (angle)) + ((height / 2.0) * cos (angle));
-	*vertexPtr = x + xV;
-	if (*vertexPtr < obstacle->minX) {
-		obstacle->minX = *vertexPtr;
-	}
-	if (*vertexPtr > obstacle->maxX) {
-		obstacle->maxX = *vertexPtr;
-	}
-	vertexPtr++;
-	*vertexPtr = y + yV;
-	if (*vertexPtr < obstacle->minY) {
-		obstacle->minY = *vertexPtr;
-	}
-	if (*vertexPtr > obstacle->maxY) {
-		obstacle->maxY = *vertexPtr;
-	}
-	vertexPtr++;
-	
-	xV = ((-width / 2.0) * cos (angle)) - ((-height / 2.0) * sin (angle));
-	yV = ((-width / 2.0) * sin (angle)) + ((-height / 2.0) * cos (angle));
-	*vertexPtr = x + xV;
-	if (*vertexPtr < obstacle->minX) {
-		obstacle->minX = *vertexPtr;
-	}
-	if (*vertexPtr > obstacle->maxX) {
-		obstacle->maxX = *vertexPtr;
-	}
-	vertexPtr++;
-	*vertexPtr = y + yV;
-	if (*vertexPtr < obstacle->minY) {
-		obstacle->minY = *vertexPtr;
-	}
-	if (*vertexPtr > obstacle->maxY) {
-		obstacle->maxY = *vertexPtr;
-	}
-//	vertexPtr++;
-	
-	return obstacle;
-}
-
-Obstacle *obstacleCreateCylinder (double x, double y, double radius) {
-	Obstacle *obstacle = malloc (sizeof(Obstacle));
-	obstacle->xLoc = x;
-	obstacle->yLoc = y;
-	
-	obstacle->minX = x;
-	obstacle->minY = y;
-	obstacle->maxX = x;
-	obstacle->maxY = y;
-	
-	obstacle->numVertices = 8;
-	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
-	double *vertexPtr = obstacle->vertexArray;
-	for (int i = 0; i < 8; i++) {
-		double xD = sin (i * M_PI / 4) * radius;
-		double yD = cos (i * M_PI / 4) * radius;
-		*vertexPtr = x + xD;
+	// Walk all vertices. Keep running total for x and y for center finding (averaging).
+	// Keep track of smallesrt x and y and largest x and y for bounds testing later.
+	for (int i = 0; i < obstacle->numVertices; i++) {
 		if (*vertexPtr < obstacle->minX) {
 			obstacle->minX = *vertexPtr;
 		}
 		if (*vertexPtr > obstacle->maxX) {
 			obstacle->maxX = *vertexPtr;
 		}
+		totalX += *vertexPtr;
 		vertexPtr++;
-		*vertexPtr = y + yD;
 		if (*vertexPtr < obstacle->minY) {
 			obstacle->minY = *vertexPtr;
 		}
 		if (*vertexPtr > obstacle->maxY) {
 			obstacle->maxY = *vertexPtr;
 		}
-		vertexPtr++;
+		totalY += *vertexPtr;
+		if ((i + 1) < obstacle->numVertices) {
+			vertexPtr++;
+		}
 	}
+	
+	// Determine center (average) x and y.
+	obstacle->xCenter = totalX / obstacle->numVertices;
+	obstacle->yCenter = totalY / obstacle->numVertices;
+}
+
+#pragma mark - Public
+
+Obstacle *obstacleCreate (double *vertexArray, int vertexCount) {
+	Obstacle *obstacle = _obstacleCreateBase ();
+	obstacle->kind = ObstacleKindPolygonalPrism;
+	
+	// Allocate storage for vertices.
+	obstacle->numVertices = vertexCount;
+	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
+	
+	// Copy over vertices. Keep running total of x and y to find center later.
+	double *vertexPtr = obstacle->vertexArray;
+	double *vertexSourcePtr = vertexArray;
+	for (int i = 0; i < obstacle->numVertices; i++) {
+		// Copy x.
+		*vertexPtr = *vertexSourcePtr;
+		vertexPtr++;
+		vertexSourcePtr++;
+		
+		// Copy y.
+		*vertexPtr = *vertexSourcePtr;
+		if ((i + 1) < obstacle->numVertices) {
+			vertexPtr++;
+			vertexSourcePtr++;
+		}
+	}
+	
+	// Find center and min/max for x and y.
+	_obstacleAssignCenterMinMaxBounds (obstacle);
 	
 	return obstacle;
 }
 
+Obstacle *obstacleCreateQuadPrism (double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) {
+	Obstacle *obstacle = _obstacleCreateBase ();
+	obstacle->kind = ObstacleKindPolygonalPrism;
+	obstacle->numVertices = 4;
+	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
+	
+	double *vertexPtr = obstacle->vertexArray;
+	*vertexPtr = x0;
+	vertexPtr++;
+	*vertexPtr = y0;
+	vertexPtr++;
+	*vertexPtr = x1;
+	vertexPtr++;
+	*vertexPtr = y1;
+	vertexPtr++;
+	*vertexPtr = x2;
+	vertexPtr++;
+	*vertexPtr = y2;
+	vertexPtr++;
+	*vertexPtr = x3;
+	vertexPtr++;
+	*vertexPtr = y3;
+	
+	// Find center and min/max for x and y.
+	_obstacleAssignCenterMinMaxBounds (obstacle);
+	
+	return obstacle;
+}
+
+Obstacle *obstacleCreateRectangluarPrism (double x0, double y0, double x1, double y1) {
+	Obstacle *obstacle = _obstacleCreateBase ();
+	obstacle->kind = ObstacleKindRectangularPrism;
+	obstacle->numVertices = 4;
+	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
+	
+	double *vertexPtr = obstacle->vertexArray;
+	*vertexPtr = x0;
+	vertexPtr++;
+	*vertexPtr = y0;
+	vertexPtr++;
+	
+	*vertexPtr = x1;
+	vertexPtr++;
+	*vertexPtr = y0;
+	vertexPtr++;
+	
+	*vertexPtr = x1;
+	vertexPtr++;
+	*vertexPtr = y1;
+	vertexPtr++;
+	
+	*vertexPtr = x0;
+	vertexPtr++;
+	*vertexPtr = y1;
+	vertexPtr++;
+	
+	// Find center and min/max for x and y.
+	_obstacleAssignCenterMinMaxBounds (obstacle);
+	
+	return obstacle;
+}
+
+Obstacle *obstacleCreateRotatedRectangularPrism (double x, double y, double width, double height, double rotationDegrees) {
+	Obstacle *obstacle = _obstacleCreateBase ();
+	obstacle->kind = ObstacleKindRectangularPrism;
+	obstacle->rotationDegrees = rotationDegrees;
+	obstacle->numVertices = 4;
+	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
+	
+	double *vertexPtr = obstacle->vertexArray;
+	double angle = rotationDegrees / 180.0 * M_PI;
+	
+	double xV = ((width / 2.0) * cos (angle)) - ((-height / 2.0) * sin (angle));
+	double yV = ((width / 2.0) * sin (angle)) + ((-height / 2.0) * cos (angle));
+	*vertexPtr = x + xV;
+	vertexPtr++;
+	*vertexPtr = y + yV;
+	vertexPtr++;
+	
+	xV = ((width / 2.0) * cos (angle)) - ((height / 2.0) * sin (angle));
+	yV = ((width / 2.0) * sin (angle)) + ((height / 2.0) * cos (angle));
+	*vertexPtr = x + xV;
+	vertexPtr++;
+	*vertexPtr = y + yV;
+	vertexPtr++;
+	
+	xV = ((-width / 2.0) * cos (angle)) - ((height / 2.0) * sin (angle));
+	yV = ((-width / 2.0) * sin (angle)) + ((height / 2.0) * cos (angle));
+	*vertexPtr = x + xV;
+	vertexPtr++;
+	*vertexPtr = y + yV;
+	vertexPtr++;
+	
+	xV = ((-width / 2.0) * cos (angle)) - ((-height / 2.0) * sin (angle));
+	yV = ((-width / 2.0) * sin (angle)) + ((-height / 2.0) * cos (angle));
+	*vertexPtr = x + xV;
+	vertexPtr++;
+	*vertexPtr = y + yV;
+	
+	// Find center and min/max for x and y.
+	_obstacleAssignCenterMinMaxBounds (obstacle);
+	
+	return obstacle;
+}
+
+Obstacle *obstacleCreateCylinder (double x, double y, double radius) {
+	Obstacle *obstacle = _obstacleCreateBase ();
+	obstacle->kind = ObstacleKindCylinder;
+	obstacle->radius = radius;
+	obstacle->numVertices = round (radius / 2);
+	if (obstacle->numVertices < 8) {
+		obstacle->numVertices = 8;
+	}
+	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
+	
+	double *vertexPtr = obstacle->vertexArray;
+	for (int i = 0; i < obstacle->numVertices; i++) {
+		double xD = sin (i * M_PI * 2 / obstacle->numVertices) * radius;
+		double yD = cos (i * M_PI * 2 / obstacle->numVertices) * radius;
+		*vertexPtr = x + xD;
+		vertexPtr++;
+		*vertexPtr = y + yD;
+		if ((i + 1) < obstacle->numVertices) {
+			vertexPtr++;
+		}
+	}
+	
+	// Find center and min/max for x and y.
+	_obstacleAssignCenterMinMaxBounds (obstacle);
+	
+	return obstacle;
+}
+
+void obstacleShouldVoidShadows (Obstacle *obstacle, bool shouldVoid) {
+	// NOP.
+	if (obstacle == NULL) {
+		return;
+	}
+	
+	obstacle->role = shouldVoid ? ObstacleRoleVoidsShadows : ObstacleRoleBlocksLight;
+}
+
+void obstacleFree (Obstacle *obstacle) {
+	// NOP.
+	if (obstacle == NULL) {
+		return;
+	}
+	
+	// Free polygon points.
+	if (obstacle->vertexArray) {
+		free (obstacle->vertexArray);
+	}
+	obstacle->vertexArray = NULL;
+	obstacle->numVertices = 0;
+	
+	free (obstacle);
+}
