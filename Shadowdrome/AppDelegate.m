@@ -295,11 +295,11 @@ SDContext *shadowContext;
 	
 //	[self test0];
 //	[self addKingOfDiamondsLightsAndObstacles];
-	[self addSlickChickLightsAndObstacles];
+//	[self addSlickChickLightsAndObstacles];
 	
-	char *json = sdContextJSONRepresentation (shadowContext);
-	self.contextJSON = [NSString stringWithCString: json encoding: NSASCIIStringEncoding];
-
+//	char *json = sdContextJSONRepresentation (shadowContext);
+//	self.contextJSON = [NSString stringWithCString: json encoding: NSASCIIStringEncoding];
+	
 	[self renderPlayfield];
 }
 
@@ -350,9 +350,44 @@ SDContext *shadowContext;
 	return bitmapData;
 }
 
-- (IBAction) saveShadow: (id) sender {
+- (IBAction) openJSONRepresentation: (id) sender {
+	NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+	openPanel.allowsMultipleSelection = NO;
+	[openPanel beginWithCompletionHandler:^ (NSInteger result) {
+		if (result == NSModalResponseOK) {
+			for (NSURL *oneURL in [openPanel URLs]) {
+				NSError *error;
+				NSString *json = [NSString stringWithContentsOfURL: oneURL encoding: NSASCIIStringEncoding error: &error];
+				if (json) {
+					if (shadowContext) {
+						sdContextFree (shadowContext);
+						shadowContext = NULL;
+					}
+					shadowContext = sdContextCreateFromJSONRepresentation ([json cStringUsingEncoding: NSASCIIStringEncoding]);
+					[self renderPlayfield];
+				}
+			}
+		}
+	}];
+}
+
+- (IBAction) saveJSONRepresentation: (id) sender {
 	NSSavePanel *panel = [NSSavePanel savePanel];
-	panel.nameFieldStringValue = @"shadow.png";
+	panel.nameFieldStringValue = [NSString stringWithFormat: @"%s.shadow", shadowContext->name];
+	[panel beginWithCompletionHandler: ^(NSModalResponse result) {
+		if (result == NSModalResponseOK) {
+			NSString *json = [NSString stringWithCString: sdContextJSONRepresentation (shadowContext) encoding: NSASCIIStringEncoding];
+			if (json) {
+				NSError *error;
+				[json writeToURL: [panel URL] atomically: YES encoding: NSUTF8StringEncoding error: &error];
+			}
+		}
+	}];
+}
+
+- (IBAction) saveBitmap: (id) sender {
+	NSSavePanel *panel = [NSSavePanel savePanel];
+	panel.nameFieldStringValue = [NSString stringWithFormat: @"%s.png", shadowContext->name];
 	[panel beginWithCompletionHandler: ^(NSModalResponse result) {
 		if (result == NSModalResponseOK) {
 			NSData *bitmapData = [self getFullsizeBitmapData];

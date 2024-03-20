@@ -18,6 +18,10 @@ typedef struct {
 /// Creates a lamp at point x, y.
 Lamp *lampCreate (double x, double y);
 
+void lampSetRadius (Lamp *lamp, double radius);
+
+void lampSetIntensity (Lamp *lamp, double intensity);
+
 /// Free storage for lamp.
 void lampFree (Lamp *lamp);
 

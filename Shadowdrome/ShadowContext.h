@@ -40,3 +40,5 @@ int sdContextAddObstacle (SDContext *context, Obstacle *obstacle);
 int sdContextRenderToBitmap (SDContext *context, BMContext *bitmap);
 
 #endif /* ShadowContext_h */
+
+void sdContextFree (SDContext *context);

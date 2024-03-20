@@ -201,6 +201,7 @@ double _sdContextGetLuminanceForPoint (SDContext *context, double x, double y) {
 SDContext *sdContextCreate (char *name, int width, int height) {
 	SDContext *context = malloc (sizeof(SDContext));
 	context->name = malloc (sizeof(char) * (strlen (name) + 1));
+	context->name[0] = '\0';
 	strcpy (context->name, name);
 	context->width = width;
 	context->height = height;

@@ -33,7 +33,7 @@ typedef struct {
 	double radius;				// Optional, only applies to ObstacleKindCylinder.
 	double rotationDegrees;		// Optional, only applies to ObstacleKindRectangularPrism.
 	int numVertices;			// Number of (x, y) pairs (e.g., for a rectangle, numVertices=4).
-	double *vertexArray;		// ordered: [x0, y0, x1, y1 ... xn, yn], count = numVertices * 2 (e.g., for a rectangle, vertexArray count=8).
+	double *vertexArray;		// ordered: [x0, y0, ... xn, yn], count = numVertices * 2 (e.g., for a rectangle, vertexArray count=8).
 	double minX;				// Smallest x value in vertexArray (used for bounds testing vertices).
 	double minY;				// Smallest y value in vertexArray (used for bounds testing vertices).
 	double maxX;				// Largest x value in vertexArray (used for bounds testing vertices).

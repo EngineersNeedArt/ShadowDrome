@@ -11,5 +11,7 @@
 
 char *sdContextJSONRepresentation (SDContext *context);
 
+SDContext *sdContextCreateFromJSONRepresentation (const char *json);
+
 
 #endif /* ShadowContextJSONLayer_h */

@@ -221,3 +221,95 @@ bail:
 	
 	return jsonString;
 }
+
+SDContext *sdContextCreateFromJSONRepresentation (const char *json) {
+	SDContext *context = NULL;
+	cJSON *rootObject = cJSON_Parse (json);
+	if (rootObject == NULL) {
+		goto bail;
+	}
+	
+	// Get basic information for shadow context.
+	int version = round (cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (rootObject, "version")));
+	char *title = cJSON_GetStringValue (cJSON_GetObjectItemCaseSensitive (rootObject, "title"));
+	int width = round (cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (rootObject, "width")));
+	int height = round (cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (rootObject, "height")));
+	
+	// Sanity check.
+	if ((version != 0) || (title == NULL) || (width <= 0) || (height <= 0)) {
+		goto bail;
+	}
+	
+	// Create shadow context.
+	context = sdContextCreate( title, width, height);
+	
+	// Parse lamps.
+	cJSON *lampsJSON = cJSON_GetObjectItemCaseSensitive (rootObject, "lamps");
+	if (cJSON_IsArray (lampsJSON)) {
+		int numLamps = cJSON_GetArraySize (lampsJSON);
+		for (int l = 0; l < numLamps; l++) {
+			cJSON* oneLampJSON = cJSON_GetArrayItem (lampsJSON, l);
+			double x = cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneLampJSON, "xLoc"));
+			double y = cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneLampJSON, "yLoc"));
+			Lamp *lamp = lampCreate (x, y);
+			lampSetRadius (lamp, cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneLampJSON, "radius")));
+			lampSetIntensity (lamp, cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneLampJSON, "intensity")));
+			sdContextAddLamp (context, lamp);
+		}
+	}
+	
+	// Parse obstacles.
+	cJSON *obstaclesJSON = cJSON_GetObjectItemCaseSensitive (rootObject, "obstacles");
+	if (cJSON_IsArray (obstaclesJSON)) {
+		int numObstacles = cJSON_GetArraySize (obstaclesJSON);
+		for (int o = 0; o < numObstacles; o++) {
+			cJSON* oneObstacleJSON = cJSON_GetArrayItem (obstaclesJSON, o);
+			char *kind = cJSON_GetStringValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "kind"));
+			Obstacle *obstacle = NULL;
+			if (strcmp (kind, "cylinder") == 0) {
+				double x = cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "xCenter"));
+				double y = cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "yCenter"));
+				double radius = cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "radius"));
+				obstacle = obstacleCreateCylinder (x, y, radius);
+			} else if (strcmp (kind, "rectangle") == 0) {
+				double rotationDegrees = cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "rotationDegrees"));
+				double x = cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "xCenter"));
+				double y = cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "yCenter"));
+				double width = cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "width"));
+				double height = cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "height"));
+				if (isnan (rotationDegrees)) {
+					double x0 = x - (width / 2.0);
+					double y0 = y - (height / 2.0);
+					obstacle = obstacleCreateRectangluarPrism (x0, y0, x0 + width, y0 + height);
+				} else {
+					obstacle = obstacleCreateRotatedRectangularPrism (x, y, width, height, rotationDegrees);
+				}
+			} else if (strcmp (kind, "polygon") == 0) {
+				int numVertices = round (cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "numVertices")));
+				cJSON *vertexJSON = cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "vertices");
+				if (cJSON_IsArray (vertexJSON)) {
+					int numValues = cJSON_GetArraySize (vertexJSON);
+					double *buffer = malloc(sizeof(double) * numValues);
+					for (int i = 0; i < numValues; i++) {
+						double value = cJSON_GetNumberValue (cJSON_GetArrayItem (vertexJSON, i));
+						buffer[i] = value;
+					}
+					obstacle = obstacleCreate (buffer, numVertices);
+					free (buffer);
+				}
+			}
+			
+			if (obstacle) {
+				char *role = cJSON_GetStringValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "role"));
+				if (strcmp (role, "voids") == 0) {
+					obstacleShouldVoidShadows (obstacle, true);
+				}
+				sdContextAddObstacle (context, obstacle);
+			}
+		}
+	}
+	
+bail:
+	
+	return context;
+}

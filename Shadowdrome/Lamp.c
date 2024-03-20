@@ -15,6 +15,14 @@ Lamp *lampCreate (double x, double y) {
 	return lamp;
 }
 
+void lampSetRadius (Lamp *lamp, double radius) {
+	lamp->radius = radius;
+}
+
+void lampSetIntensity (Lamp *lamp, double intensity) {
+	lamp->intensity = intensity;
+}
+
 void lampFree (Lamp *lamp) {
 	// NOP.
 	if (lamp == NULL) {
