@@ -14,6 +14,8 @@ Obstacle *_obstacleCreateBase (void) {
 	obstacle->role = ObstacleRoleBlocksLight;
 	obstacle->xCenter = 0.0;
 	obstacle->yCenter = 0.0;
+	obstacle->width = 0.0;
+	obstacle->height = 0.0;
 	obstacle->radius = 0.0;
 	obstacle->rotationDegrees = 0.0;
 	obstacle->minX = 0.0;
@@ -24,10 +26,8 @@ Obstacle *_obstacleCreateBase (void) {
 	return obstacle;
 }
 
-void _obstacleAssignCenterMinMaxBounds (Obstacle *obstacle) {
+void _obstacleAssignMinMaxBounds (Obstacle *obstacle) {
 	double *vertexPtr = obstacle->vertexArray;
-	double totalX = 0.0;
-	double totalY = 0.0;
 	
 	// Walk all vertices. Keep running total for x and y for center finding (averaging).
 	// Keep track of smallesrt x and y and largest x and y for bounds testing later.
@@ -38,7 +38,6 @@ void _obstacleAssignCenterMinMaxBounds (Obstacle *obstacle) {
 		if (*vertexPtr > obstacle->maxX) {
 			obstacle->maxX = *vertexPtr;
 		}
-		totalX += *vertexPtr;
 		vertexPtr++;
 		if (*vertexPtr < obstacle->minY) {
 			obstacle->minY = *vertexPtr;
@@ -46,15 +45,10 @@ void _obstacleAssignCenterMinMaxBounds (Obstacle *obstacle) {
 		if (*vertexPtr > obstacle->maxY) {
 			obstacle->maxY = *vertexPtr;
 		}
-		totalY += *vertexPtr;
 		if ((i + 1) < obstacle->numVertices) {
 			vertexPtr++;
 		}
 	}
-	
-	// Determine center (average) x and y.
-	obstacle->xCenter = totalX / obstacle->numVertices;
-	obstacle->yCenter = totalY / obstacle->numVertices;
 }
 
 #pragma mark - Public
@@ -84,8 +78,8 @@ Obstacle *obstacleCreate (double *vertexArray, int vertexCount) {
 		}
 	}
 	
-	// Find center and min/max for x and y.
-	_obstacleAssignCenterMinMaxBounds (obstacle);
+	// Find min/max for x and y.
+	_obstacleAssignMinMaxBounds (obstacle);
 	
 	return obstacle;
 }
@@ -113,8 +107,8 @@ Obstacle *obstacleCreateQuadPrism (double x0, double y0, double x1, double y1, d
 	vertexPtr++;
 	*vertexPtr = y3;
 	
-	// Find center and min/max for x and y.
-	_obstacleAssignCenterMinMaxBounds (obstacle);
+	// Find min/max for x and y.
+	_obstacleAssignMinMaxBounds (obstacle);
 	
 	return obstacle;
 }
@@ -122,6 +116,10 @@ Obstacle *obstacleCreateQuadPrism (double x0, double y0, double x1, double y1, d
 Obstacle *obstacleCreateRectangluarPrism (double x0, double y0, double x1, double y1) {
 	Obstacle *obstacle = _obstacleCreateBase ();
 	obstacle->kind = ObstacleKindRectangularPrism;
+	obstacle->xCenter = (x0 + x1) / 2.0;
+	obstacle->yCenter = (y0 + y1) / 2.0;
+	obstacle->width = x1 - x0;
+	obstacle->height = y1 - y0;
 	obstacle->numVertices = 4;
 	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
 	
@@ -146,8 +144,8 @@ Obstacle *obstacleCreateRectangluarPrism (double x0, double y0, double x1, doubl
 	*vertexPtr = y1;
 	vertexPtr++;
 	
-	// Find center and min/max for x and y.
-	_obstacleAssignCenterMinMaxBounds (obstacle);
+	// Find min/max for x and y.
+	_obstacleAssignMinMaxBounds (obstacle);
 	
 	return obstacle;
 }
@@ -155,6 +153,10 @@ Obstacle *obstacleCreateRectangluarPrism (double x0, double y0, double x1, doubl
 Obstacle *obstacleCreateRotatedRectangularPrism (double x, double y, double width, double height, double rotationDegrees) {
 	Obstacle *obstacle = _obstacleCreateBase ();
 	obstacle->kind = ObstacleKindRectangularPrism;
+	obstacle->xCenter = x;
+	obstacle->yCenter = y;
+	obstacle->width = width;
+	obstacle->height = height;
 	obstacle->rotationDegrees = rotationDegrees;
 	obstacle->numVertices = 4;
 	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
@@ -189,8 +191,8 @@ Obstacle *obstacleCreateRotatedRectangularPrism (double x, double y, double widt
 	vertexPtr++;
 	*vertexPtr = y + yV;
 	
-	// Find center and min/max for x and y.
-	_obstacleAssignCenterMinMaxBounds (obstacle);
+	// Find min/max for x and y.
+	_obstacleAssignMinMaxBounds (obstacle);
 	
 	return obstacle;
 }
@@ -198,6 +200,8 @@ Obstacle *obstacleCreateRotatedRectangularPrism (double x, double y, double widt
 Obstacle *obstacleCreateCylinder (double x, double y, double radius) {
 	Obstacle *obstacle = _obstacleCreateBase ();
 	obstacle->kind = ObstacleKindCylinder;
+	obstacle->xCenter = x;
+	obstacle->yCenter = y;
 	obstacle->radius = radius;
 	obstacle->numVertices = round (radius / 2);
 	if (obstacle->numVertices < 8) {
@@ -217,8 +221,8 @@ Obstacle *obstacleCreateCylinder (double x, double y, double radius) {
 		}
 	}
 	
-	// Find center and min/max for x and y.
-	_obstacleAssignCenterMinMaxBounds (obstacle);
+	// Finds min/max for x and y.
+	_obstacleAssignMinMaxBounds (obstacle);
 	
 	return obstacle;
 }

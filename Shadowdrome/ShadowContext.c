@@ -5,6 +5,7 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "ShadowContext.h"
 
@@ -197,9 +198,10 @@ double _sdContextGetLuminanceForPoint (SDContext *context, double x, double y) {
 
 #pragma mark - Public
 
-SDContext *sdContextCreate (int width, int height) {
+SDContext *sdContextCreate (char *name, int width, int height) {
 	SDContext *context = malloc (sizeof(SDContext));
-	
+	context->name = malloc (sizeof(char) * (strlen (name) + 1));
+	strcpy (context->name, name);
 	context->width = width;
 	context->height = height;
 	context->lampCount = 0;
@@ -287,6 +289,12 @@ void sdContextFree (SDContext *context) {
 		return;
 	}
 	
+	// Free name.
+	if (context->name) {
+		free (context->name);
+	}
+	context->name = NULL;
+
 	// Free lamps.
 	if (context->lampArray) {
 		free (context->lampArray);

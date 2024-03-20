@@ -12,6 +12,7 @@
 
 
 typedef struct {
+	char *name;
 	int width;
 	int height;
 	int lampCount;
@@ -22,7 +23,7 @@ typedef struct {
 } SDContext;
 
 /// Create a context with specified width and height.
-SDContext *sdContextCreate (int width, int height);
+SDContext *sdContextCreate (char *name, int width, int height);
 
 /// Add lamp to context. Caller should not free lamp until after context is freed - context only has pointer to lamp.
 /// Returns count of lamps.

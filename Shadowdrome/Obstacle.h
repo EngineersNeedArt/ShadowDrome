@@ -28,6 +28,8 @@ typedef struct {
 	ObstacleRole role;
 	double xCenter;
 	double yCenter;
+	double width;
+	double height;
 	double radius;				// Optional, only applies to ObstacleKindCylinder.
 	double rotationDegrees;		// Optional, only applies to ObstacleKindRectangularPrism.
 	int numVertices;			// Number of (x, y) pairs (e.g., for a rectangle, numVertices=4).

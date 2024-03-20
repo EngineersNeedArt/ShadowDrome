@@ -10,11 +10,13 @@
 #include "Lamp.h"
 #include "Obstacle.h"
 #include "ShadowContext.h"
+#include "ShadowContextJSONLayer.h"
 
 
 @interface AppDelegate ()
 @property (strong) IBOutlet NSWindow *window;
 @property (strong) IBOutlet NSImageView *shadowImageView;
+@property (strong) NSString *contextJSON;
 @end
 
 @implementation AppDelegate
@@ -111,17 +113,17 @@ SDContext *shadowContext;
 	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (461, 1727, 850, 1509, 850, 2048, 461, 2048));
 	
 	// Arch.
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (38, 384 - 18, 0, 400 - 18, 0, 0, 38, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (97, 246 - 18, 38, 384 - 18, 38, 0, 97, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (166, 161 - 18, 97, 246 - 18, 97, 0, 166, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (257, 94 - 18, 166, 161 - 18, 166, 0, 257, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (383, 51 - 18, 257, 94 - 18, 257, 0, 383, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (527, 45 - 18, 383, 51 - 18, 383, 0, 527, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (630, 64 - 18, 527, 45 - 18, 527, 0, 630, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (730, 106 - 18, 630, 64 - 18, 630, 0, 730, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (816, 179 - 18, 730, 106 - 18, 730, 0, 816, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (895, 301 - 18, 816, 179 - 18, 816, 0, 895, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (936, 418 - 18, 895, 301 - 18, 895, 0, 936, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (38, 384 - 30, 0, 400 - 30, 0, 0, 38, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (97, 246 - 30, 38, 384 - 30, 38, 0, 97, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (166, 161 - 30, 97, 246 - 30, 97, 0, 166, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (257, 94 - 30, 166, 161 - 30, 166, 0, 257, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (383, 51 - 30, 257, 94 - 30, 257, 0, 383, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (527, 45 - 30, 383, 51 - 30, 383, 0, 527, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (630, 64 - 30, 527, 45 - 30, 527, 0, 630, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (730, 106 - 30, 630, 64 - 30, 630, 0, 730, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (816, 179 - 30, 730, 106 - 30, 730, 0, 816, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (895, 301 - 30, 816, 179 - 30, 816, 0, 895, 0));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (936, 418 - 30, 895, 301 - 30, 895, 0, 936, 0));
 	
 	// Voids.
 	Obstacle *voidObstacle = obstacleCreateCylinder (430, 522, 22);
@@ -289,12 +291,15 @@ SDContext *shadowContext;
 	bitmap = bmContextCreate (bitmapWidth, bitmapHeight);
 	
 	// Create ShadowContext.
-	shadowContext = sdContextCreate (1024, 2048);
+	shadowContext = sdContextCreate ("Slick Chick", 1024, 2048);
 	
 //	[self test0];
 //	[self addKingOfDiamondsLightsAndObstacles];
 	[self addSlickChickLightsAndObstacles];
 	
+	char *json = sdContextJSONRepresentation (shadowContext);
+	self.contextJSON = [NSString stringWithCString: json encoding: NSASCIIStringEncoding];
+
 	[self renderPlayfield];
 }
 
