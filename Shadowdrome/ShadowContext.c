@@ -139,7 +139,7 @@ double _sdTestTotalObstacleOpacity (SDContext *context, double x0, double y0, do
 	}
 	
 	if (isObstacle) {
-		return opacity;
+		return 1.0 - opacity;
 	} else {
 		return 0.0;
 	}
@@ -166,7 +166,6 @@ double _sdMapItensity (SDContext *context, double distanceSquared, double intens
 
 double _sdLuminanceForLamp (SDContext *context, double x, double y, Lamp *lamp) {
 	double luminance = 0.0;
-	
 	for (int i = 0; i <= lamp->radius + 1; i++) {
 		double filamentDistance = (i * 2) - lamp->radius;
 		double filamentIntensity = fabs (filamentDistance / lamp->radius) * lamp->intensity;

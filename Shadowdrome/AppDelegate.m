@@ -385,10 +385,10 @@ SDContext *shadowContext;
 	int bitmapHeight = 512;	// 1024;
 	bitmap = bmContextCreate (bitmapWidth, bitmapHeight);
 	
-//	[self test0];
+	[self test0];
 //	[self addKingOfDiamondsLightsAndObstacles];
 //	[self addSlickChickLightsAndObstacles];
-	[self addDominoLightsAndObstacles];
+//	[self addDominoLightsAndObstacles];
 
 //	char *json = sdContextJSONRepresentation (shadowContext);
 //	self.contextJSON = [NSString stringWithCString: json encoding: NSASCIIStringEncoding];
