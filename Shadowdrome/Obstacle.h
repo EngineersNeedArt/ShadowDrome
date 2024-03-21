@@ -16,22 +16,16 @@ typedef enum {
 	ObstacleKindCount
 } ObstacleKind;
 
-typedef enum {
-	ObstacleRoleBlocksLight,
-	ObstacleRoleVoidsShadows,
-	ObstacleRoleCount
-} ObstacleRole;
-
 
 typedef struct {
 	ObstacleKind kind;
-	ObstacleRole role;
 	double xCenter;
 	double yCenter;
 	double width;
 	double height;
 	double radius;				// Optional, only applies to ObstacleKindCylinder.
 	double rotationDegrees;		// Optional, only applies to ObstacleKindRectangularPrism.
+	double opacity;				// Default 1.0, blocks light. Value of 0.0 acts as a shadow 'void'.
 	int numVertices;			// Number of (x, y) pairs (e.g., for a rectangle, numVertices=4).
 	double *vertexArray;		// ordered: [x0, y0, ... xn, yn], count = numVertices * 2 (e.g., for a rectangle, vertexArray count=8).
 	double minX;				// Smallest x value in vertexArray (used for bounds testing vertices).
@@ -55,8 +49,8 @@ Obstacle *obstacleCreateRotatedRectangularPrism (double x, double y, double widt
 /// Convenience initializer/allocater. Pass the center (x, y), and radius of the cylinder.
 Obstacle *obstacleCreateCylinder (double x, double y, double radius);
 
-/// By default an obstacle blocks light, but specifying shouldVoid will cause the object to instead disallow shadows within its polygon interior.
-void obstacleShouldVoidShadows (Obstacle *obstacle, bool shouldVoid);
+/// Specify transparency 0.0 to 1.0 to allow light to pass through. Default is 1.0 (opaque), 0.0 special case causes shadow 'void'.
+Obstacle *obstacleSetOpacity (Obstacle *obstacle, double opacity);
 
 /// Frees memory allocated by obstacle.
 void obstacleFree (Obstacle *obstacle);

@@ -91,10 +91,14 @@ int _sdPointInObstacle (double x, double y, Obstacle *obstacle) {
 	return 0;
 }
 
-int _sdTestObstacleCollsion (SDContext *context, double x0, double y0, double x1, double y1) {
+// Returns [0.0 (no obstacle) ... 1.0 (light fully blocked)].
+
+double _sdTestTotalObstacleOpacity (SDContext *context, double x0, double y0, double x1, double y1) {
+	bool isObstacle = false;
+	double opacity = 1.0;
 	Obstacle *obstaclePtr = context->obstacleArray;
 	for (int o = 0; o < context->obstacleCount; o++) {
-		if (obstaclePtr->role == ObstacleRoleVoidsShadows) {
+		if (obstaclePtr->opacity == 0.0) {
 			obstaclePtr++;
 			continue;
 		}
@@ -111,17 +115,34 @@ int _sdTestObstacleCollsion (SDContext *context, double x0, double y0, double x1
 			double nextY = *vertexPtr;
 			vertexPtr++;
 			if (_sdIntersects2 (x0, y0, x1, y1, prevX, prevY, nextX, nextY)) {
-				return 1;
+				isObstacle = true;
+				if (obstaclePtr->opacity < 1.0) {
+					opacity = opacity * obstaclePtr->opacity;
+					break;
+				} else {
+					return 1.0;
+				}
 			}
 			prevX = nextX;
 			prevY = nextY;
 		}
 		if (_sdIntersects2 (x0, y0, x1, y1, prevX, prevY, xOrig, yOrig)) {
-			return 1;
+			isObstacle = true;
+			if (obstaclePtr->opacity < 1.0) {
+				opacity = opacity * obstaclePtr->opacity;
+				break;
+			} else {
+				return 1.0;
+			}
 		}
 		obstaclePtr++;
 	}
-	return 0;
+	
+	if (isObstacle) {
+		return opacity;
+	} else {
+		return 0.0;
+	}
 }
 
 void _sdGetFilamentPointForLamp (Lamp *lamp, double relX, double relY, double distance, double *xLoc, double *yLoc) {
@@ -147,18 +168,18 @@ double _sdLuminanceForLamp (SDContext *context, double x, double y, Lamp *lamp) 
 	double luminance = 0.0;
 	
 	for (int i = 0; i <= lamp->radius + 1; i++) {
-//	for (int i = 0; i < 1; i++) {
 		double filamentDistance = (i * 2) - lamp->radius;
 		double filamentIntensity = fabs (filamentDistance / lamp->radius) * lamp->intensity;
 		double xLoc, yLoc;
 		_sdGetFilamentPointForLamp (lamp, x, y, filamentDistance, &xLoc, &yLoc);
-		if (_sdTestObstacleCollsion (context, x, y, xLoc, yLoc) == 0) {
+		double opacity = _sdTestTotalObstacleOpacity (context, x, y, xLoc, yLoc);
+		if (opacity < 1.0) {
 			double xDistance = xLoc - x;
 			double yDistance = yLoc - y;
 			double distanceSquared = (xDistance * xDistance) + (yDistance * yDistance);
 			if (distanceSquared != 0.0) {
 				double intensity = _sdMapItensity (context, distanceSquared, filamentIntensity);
-				luminance += intensity;
+				luminance += (intensity * (1.0 - opacity));
 			}
 		}
 	}
@@ -171,21 +192,13 @@ double _sdContextGetLuminanceForPoint (SDContext *context, double x, double y) {
 	Obstacle *obstaclePtr = context->obstacleArray;
 	for (int o = 0; o < context->obstacleCount; o++) {
 		if (_sdPointInObstacle (x, y, obstaclePtr)) {
-			if (obstaclePtr->role == ObstacleRoleVoidsShadows) {
+			if (obstaclePtr->opacity == 0.0) {
 				return 255.0;
 			}
 			return 0.0;
 		}
 		obstaclePtr++;
 	}
-	
-//	Voided *voidedPtr = context->voidedArray;
-//	for (int o = 0; o < context->voidedCount; o++) {
-//		if (_sdPointInVoid (x, y, voidedPtr)) {
-//			return 255.0;
-//		}
-//		voidedPtr++;
-//	}
 	
 	Lamp *lampPtr = context->lampArray;
 	for (int l = 0; l < context->lampCount; l++) {

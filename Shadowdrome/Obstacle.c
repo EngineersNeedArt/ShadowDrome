@@ -11,13 +11,13 @@
 Obstacle *_obstacleCreateBase (void) {
 	Obstacle *obstacle = malloc (sizeof(Obstacle));
 	obstacle->kind = ObstacleKindPolygonalPrism;
-	obstacle->role = ObstacleRoleBlocksLight;
 	obstacle->xCenter = 0.0;
 	obstacle->yCenter = 0.0;
 	obstacle->width = 0.0;
 	obstacle->height = 0.0;
 	obstacle->radius = 0.0;
 	obstacle->rotationDegrees = 0.0;
+	obstacle->opacity = 1.0;
 	obstacle->minX = 0.0;
 	obstacle->minY = 0.0;
 	obstacle->maxX = 0.0;
@@ -227,13 +227,14 @@ Obstacle *obstacleCreateCylinder (double x, double y, double radius) {
 	return obstacle;
 }
 
-void obstacleShouldVoidShadows (Obstacle *obstacle, bool shouldVoid) {
+Obstacle *obstacleSetOpacity (Obstacle *obstacle, double opacity) {
 	// NOP.
 	if (obstacle == NULL) {
-		return;
+		return NULL;
 	}
 	
-	obstacle->role = shouldVoid ? ObstacleRoleVoidsShadows : ObstacleRoleBlocksLight;
+	obstacle->opacity = opacity;
+	return obstacle;
 }
 
 void obstacleFree (Obstacle *obstacle) {

@@ -82,24 +82,6 @@ bool _sdContextAddObstaclesJSON (cJSON *obstacles, SDContext *context) {
 			break;
 		}
 		
-		switch (obstaclePtr->role) {
-			case ObstacleRoleBlocksLight:
-			if (cJSON_AddStringToObject(oneObstacle, "role", "blocks") == NULL) {
-				goto bail;
-			}
-			break;
-			
-			case ObstacleRoleVoidsShadows:
-			if (cJSON_AddStringToObject(oneObstacle, "role", "voids") == NULL) {
-				goto bail;
-			}
-			break;
-			
-			default:
-			goto bail;
-			break;
-		}
-		
 		if (obstaclePtr->xCenter != 0.0) {
 			if (cJSON_AddNumberToObject (oneObstacle, "xCenter", _sdContextDoubleTo3DecimalPlaces (obstaclePtr->xCenter)) == NULL) {
 				goto bail;
@@ -128,8 +110,15 @@ bool _sdContextAddObstaclesJSON (cJSON *obstacles, SDContext *context) {
 				goto bail;
 			}
 		}
+		
 		if (obstaclePtr->rotationDegrees != 0.0) {
 			if (cJSON_AddNumberToObject (oneObstacle, "rotationDegrees", obstaclePtr->rotationDegrees) == NULL) {
+				goto bail;
+			}
+		}
+		
+		if (obstaclePtr->opacity != 1.0) {
+			if (cJSON_AddNumberToObject (oneObstacle, "opacity", obstaclePtr->opacity) == NULL) {
 				goto bail;
 			}
 		}
@@ -300,9 +289,9 @@ SDContext *sdContextCreateFromJSONRepresentation (const char *json) {
 			}
 			
 			if (obstacle) {
-				char *role = cJSON_GetStringValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "role"));
-				if (strcmp (role, "voids") == 0) {
-					obstacleShouldVoidShadows (obstacle, true);
+				double opacity = cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "opacity"));
+				if (isnan (opacity)) {
+					obstacleSetOpacity (obstacle, opacity);
 				}
 				sdContextAddObstacle (context, obstacle);
 			}

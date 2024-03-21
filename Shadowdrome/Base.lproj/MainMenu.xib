@@ -684,58 +684,58 @@
         <window title="Shadowdrome" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="390" width="1071" height="839"/>
+            <rect key="contentRect" x="335" y="390" width="810" height="845"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="875"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="1071" height="839"/>
+                <rect key="frame" x="0.0" y="0.0" width="810" height="845"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <splitView fixedFrame="YES" arrangesAllSubviews="NO" dividerStyle="paneSplitter" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zd5-3Z-kXe">
-                        <rect key="frame" x="0.0" y="60" width="1071" height="779"/>
+                        <rect key="frame" x="0.0" y="60" width="810" height="785"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <customView fixedFrame="YES" id="n0c-49-APF">
-                                <rect key="frame" x="0.0" y="0.0" width="534" height="779"/>
+                                <rect key="frame" x="0.0" y="0.0" width="402" height="785"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
                                     <scrollView fixedFrame="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jGl-9W-gjE">
-                                        <rect key="frame" x="0.0" y="0.0" width="534" height="779"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="402" height="785"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <clipView key="contentView" id="XDy-8G-BDU">
-                                            <rect key="frame" x="1" y="1" width="517" height="762"/>
+                                            <rect key="frame" x="1" y="1" width="385" height="768"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="946-6D-3xQ">
-                                                    <rect key="frame" x="3" y="0.0" width="384" height="768"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="384" height="768"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" id="Y0m-eo-hkF"/>
                                                 </imageView>
                                             </subviews>
                                         </clipView>
-                                        <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="0.33333333333333331" horizontal="YES" id="gzS-VQ-8bv">
-                                            <rect key="frame" x="1" y="763" width="517" height="15"/>
+                                        <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="gzS-VQ-8bv">
+                                            <rect key="frame" x="1" y="769" width="385" height="15"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
-                                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="tZX-DV-6Di">
-                                            <rect key="frame" x="518" y="1" width="15" height="762"/>
+                                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="tZX-DV-6Di">
+                                            <rect key="frame" x="386" y="1" width="15" height="768"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                     </scrollView>
                                 </subviews>
                             </customView>
                             <customView fixedFrame="YES" id="lDg-gC-eOa">
-                                <rect key="frame" x="544" y="0.0" width="527" height="779"/>
+                                <rect key="frame" x="412" y="0.0" width="398" height="785"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
                                     <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vHp-m6-5yU">
-                                        <rect key="frame" x="0.0" y="0.0" width="527" height="779"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="398" height="785"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <clipView key="contentView" id="dQ9-f7-oST">
-                                            <rect key="frame" x="1" y="1" width="525" height="777"/>
+                                            <rect key="frame" x="1" y="1" width="396" height="783"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="automatic" headerView="Xby-K3-NG9" viewBased="YES" id="gps-fc-zuO">
-                                                    <rect key="frame" x="0.0" y="0.0" width="525" height="749"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="396" height="755"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <size key="intercellSpacing" width="17" height="0.0"/>
                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -773,7 +773,7 @@
                                                                 </tableCellView>
                                                             </prototypeCellViews>
                                                         </tableColumn>
-                                                        <tableColumn width="380" minWidth="40" maxWidth="1000" id="O9B-QQ-P5a">
+                                                        <tableColumn width="251" minWidth="40" maxWidth="1000" id="O9B-QQ-P5a">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -786,11 +786,11 @@
                                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                             <prototypeCellViews>
                                                                 <tableCellView id="0Qf-Ns-x78">
-                                                                    <rect key="frame" x="139" y="0.0" width="377" height="24"/>
+                                                                    <rect key="frame" x="139" y="0.0" width="248" height="24"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nB0-ac-IR7">
-                                                                            <rect key="frame" x="0.0" y="4" width="377" height="16"/>
+                                                                            <rect key="frame" x="0.0" y="4" width="248" height="16"/>
                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="O9P-tJ-RzG">
                                                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -818,7 +818,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                         <tableHeaderView key="headerView" wantsLayer="YES" id="Xby-K3-NG9">
-                                            <rect key="frame" x="0.0" y="0.0" width="525" height="28"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="396" height="28"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableHeaderView>
                                     </scrollView>
@@ -831,7 +831,7 @@
                         </holdingPriorities>
                     </splitView>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5oY-bN-T8j">
-                        <rect key="frame" x="938" y="13" width="120" height="32"/>
+                        <rect key="frame" x="677" y="13" width="120" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                         <buttonCell key="cell" type="push" title="Save Bitmap…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="550-7l-o8n">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -839,28 +839,6 @@
                         </buttonCell>
                         <connections>
                             <action selector="saveBitmap:" target="-1" id="ZiV-8D-2xG"/>
-                        </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R7K-N1-Uft">
-                        <rect key="frame" x="828" y="13" width="112" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="push" title="Save JSON…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BpH-C7-6V9">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="saveJSONRepresentation:" target="-1" id="Kro-AZ-epX"/>
-                        </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gTi-9A-3Bh">
-                        <rect key="frame" x="13" y="13" width="116" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="push" title="Open JSON…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Tyu-ub-gHr">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="openJSONRepresentation:" target="-1" id="CqP-bz-gYM"/>
                         </connections>
                     </button>
                     <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jW9-Ta-LWu">
@@ -872,9 +850,31 @@
                             </connections>
                         </sliderCell>
                     </slider>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R7K-N1-Uft">
+                        <rect key="frame" x="567" y="13" width="112" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                        <buttonCell key="cell" type="push" title="Save JSON…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BpH-C7-6V9">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="saveJSONRepresentation:" target="-1" id="Kro-AZ-epX"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gTi-9A-3Bh">
+                        <rect key="frame" x="13" y="13" width="116" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <buttonCell key="cell" type="push" title="Open JSON…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Tyu-ub-gHr">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="openJSONRepresentation:" target="-1" id="CqP-bz-gYM"/>
+                        </connections>
+                    </button>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="446.5" y="639.5"/>
+            <point key="canvasLocation" x="316" y="642.5"/>
         </window>
     </objects>
 </document>
