@@ -19,7 +19,8 @@ typedef struct {
 	Lamp *lampArray;
 	int obstacleCount;
 	Obstacle *obstacleArray;
-	int tempScalar;
+    int tempScalar;
+    int tempOffset;
 } SDContext;
 
 /// Create a context with specified width and height.

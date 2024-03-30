@@ -95,7 +95,7 @@ int _sdPointInObstacle (double x, double y, Obstacle *obstacle) {
 
 double _sdTestTotalObstacleOpacity (SDContext *context, double x0, double y0, double x1, double y1) {
 	bool isObstacle = false;
-	double opacity = 1.0;
+	double transparency = 1.0;
 	Obstacle *obstaclePtr = context->obstacleArray;
 	for (int o = 0; o < context->obstacleCount; o++) {
 		if (obstaclePtr->opacity == 0.0) {
@@ -117,7 +117,7 @@ double _sdTestTotalObstacleOpacity (SDContext *context, double x0, double y0, do
 			if (_sdIntersects2 (x0, y0, x1, y1, prevX, prevY, nextX, nextY)) {
 				isObstacle = true;
 				if (obstaclePtr->opacity < 1.0) {
-					opacity = opacity * obstaclePtr->opacity;
+					transparency = transparency * (1.0 - obstaclePtr->opacity);
 					break;
 				} else {
 					return 1.0;
@@ -129,7 +129,7 @@ double _sdTestTotalObstacleOpacity (SDContext *context, double x0, double y0, do
 		if (_sdIntersects2 (x0, y0, x1, y1, prevX, prevY, xOrig, yOrig)) {
 			isObstacle = true;
 			if (obstaclePtr->opacity < 1.0) {
-				opacity = opacity * obstaclePtr->opacity;
+				transparency = transparency * (1.0 - obstaclePtr->opacity);
 				break;
 			} else {
 				return 1.0;
@@ -139,7 +139,7 @@ double _sdTestTotalObstacleOpacity (SDContext *context, double x0, double y0, do
 	}
 	
 	if (isObstacle) {
-		return 1.0 - opacity;
+		return 1.0 - transparency;
 	} else {
 		return 0.0;
 	}
@@ -158,10 +158,16 @@ void _sdGetFilamentPointForLamp (Lamp *lamp, double relX, double relY, double di
 	}
 }
 
-double _sdMapItensity (SDContext *context, double distanceSquared, double intensity) {
-//	return (intensity / distanceSquared) * (double) context->tempScalar;
-//	return ((double) context->tempScalar * intensity) / sqrt (distanceSquared);
-	return (intensity * (double) context->tempScalar) / (distanceSquared + 10000);
+double _sdMapIntensity (SDContext *context, double distanceSquared, double intensity) {
+    if (0) {
+        return (intensity * (double) context->tempScalar) / (distanceSquared + 10000);
+    } else {
+        double distance = sqrt (distanceSquared) + (double) context->tempOffset;
+        return (intensity * (double) context->tempScalar) / (distance * distance);
+    }
+//	double distance = sqrt (distanceSquared) / 10;
+//	return (intensity * 100000) / ((distance + 100) * (distance + 100));
+//	return (intensity * 500) / (distance * distance);
 }
 
 double _sdLuminanceForLamp (SDContext *context, double x, double y, Lamp *lamp) {
@@ -177,7 +183,7 @@ double _sdLuminanceForLamp (SDContext *context, double x, double y, Lamp *lamp) 
 			double yDistance = yLoc - y;
 			double distanceSquared = (xDistance * xDistance) + (yDistance * yDistance);
 			if (distanceSquared != 0.0) {
-				double intensity = _sdMapItensity (context, distanceSquared, filamentIntensity);
+				double intensity = _sdMapIntensity (context, distanceSquared, filamentIntensity);
 				luminance += (intensity * (1.0 - opacity));
 			}
 		}
@@ -192,9 +198,10 @@ double _sdContextGetLuminanceForPoint (SDContext *context, double x, double y) {
 	for (int o = 0; o < context->obstacleCount; o++) {
 		if (_sdPointInObstacle (x, y, obstaclePtr)) {
 			if (obstaclePtr->opacity == 0.0) {
-				return 255.0;
+				return 1.0;
 			}
 			return 0.0;
+//			return obstaclePtr->opacity;
 		}
 		obstaclePtr++;
 	}
@@ -211,8 +218,8 @@ double _sdContextGetLuminanceForPoint (SDContext *context, double x, double y) {
 #pragma mark - Public
 
 SDContext *sdContextCreate (char *name, int width, int height) {
-	SDContext *context = malloc (sizeof(SDContext));
-	context->name = malloc (sizeof(char) * (strlen (name) + 1));
+	SDContext *context = malloc (sizeof (SDContext));
+	context->name = malloc (sizeof (char) * (strlen (name) + 1));
 	context->name[0] = '\0';
 	strcpy (context->name, name);
 	context->width = width;
@@ -221,14 +228,16 @@ SDContext *sdContextCreate (char *name, int width, int height) {
 	context->lampArray = NULL;
 	context->obstacleCount = 0;
 	context->obstacleArray = NULL;
-	context->tempScalar = 20000; 	// 100;
-	
+    
+    context->tempScalar = 200;
+    context->tempOffset = 0;
+    
 	return context;
 }
 
 int sdContextAddLamp (SDContext *context, Lamp *lamp) {
 	Lamp *wasLampArray = context->lampArray;
-	context->lampArray = malloc(sizeof(Lamp) * (context->lampCount + 1));
+	context->lampArray = malloc(sizeof (Lamp) * (context->lampCount + 1));
 	
 	Lamp *srcLampPtr = wasLampArray;
 	Lamp *destLampPtr = context->lampArray;
@@ -250,7 +259,7 @@ int sdContextAddLamp (SDContext *context, Lamp *lamp) {
 
 int sdContextAddObstacle (SDContext *context, Obstacle *obstacle) {
 	Obstacle *wasObstacleArray = context->obstacleArray;
-	context->obstacleArray = malloc(sizeof(Obstacle) * (context->obstacleCount + 1));
+	context->obstacleArray = malloc(sizeof (Obstacle) * (context->obstacleCount + 1));
 	
 	Obstacle *srcObstaclePtr = wasObstacleArray;
 	Obstacle *destObstaclePtr = context->obstacleArray;
@@ -271,6 +280,10 @@ int sdContextAddObstacle (SDContext *context, Obstacle *obstacle) {
 }
 
 int sdContextRenderToBitmap (SDContext *context, BMContext *bitmap) {
+    // NOP.
+    if (context == NULL) {
+        return 0;
+    }
 	int width = bmContextWidth (bitmap);
 	int height = bmContextHeight (bitmap);
 	double scale = 1.0;
@@ -282,11 +295,14 @@ int sdContextRenderToBitmap (SDContext *context, BMContext *bitmap) {
 		for (int x = 0; x < width; x++) {
 			double scaledX = (double) x / scale;
 			double scaledY = (double) y / scale;
-			int luminance = round (_sdContextGetLuminanceForPoint (context, scaledX, scaledY));
+			double luminance = _sdContextGetLuminanceForPoint (context, scaledX, scaledY);
+            luminance = luminance * 255.0;
+            luminance = MIN (luminance, 255.0);
+            luminance = MAX (luminance, 0.0);
 			unsigned char red, green, blue, alpha;
 			bmContextGetPixel (bitmap, x, y, &red, &green, &blue, &alpha);
-			if (alpha > luminance) {
-				alpha = alpha - luminance;
+			if (alpha > round (luminance)) {
+				alpha = alpha - round (luminance);
 			} else {
 				alpha = 0;
 			}

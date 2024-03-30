@@ -126,7 +126,7 @@ bool _sdContextAddObstaclesJSON (cJSON *obstacles, SDContext *context) {
 		// Vertices.
 		if (obstaclePtr->kind == ObstacleKindPolygonalPrism) {
 			cJSON_AddNumberToObject (oneObstacle, "numVertices", obstaclePtr->numVertices);
-			double *lowPrecisionVertices = malloc (sizeof(double) * obstaclePtr->numVertices * 2);
+			double *lowPrecisionVertices = malloc (sizeof (double) * obstaclePtr->numVertices * 2);
 			double *srcVertexPtr = obstaclePtr->vertexArray;
 			double *destVertexPtr = lowPrecisionVertices;
 			for (int v = 0; v < (obstaclePtr->numVertices * 2); v++) {
@@ -278,7 +278,7 @@ SDContext *sdContextCreateFromJSONRepresentation (const char *json) {
 				cJSON *vertexJSON = cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "vertices");
 				if (cJSON_IsArray (vertexJSON)) {
 					int numValues = cJSON_GetArraySize (vertexJSON);
-					double *buffer = malloc(sizeof(double) * numValues);
+					double *buffer = malloc(sizeof (double) * numValues);
 					for (int i = 0; i < numValues; i++) {
 						double value = cJSON_GetNumberValue (cJSON_GetArrayItem (vertexJSON, i));
 						buffer[i] = value;

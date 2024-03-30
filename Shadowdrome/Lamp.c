@@ -7,7 +7,7 @@
 
 
 Lamp *lampCreate (double x, double y) {
-	Lamp *lamp = malloc (sizeof(Lamp));
+	Lamp *lamp = malloc (sizeof (Lamp));
 	lamp->xLoc = x;
 	lamp->yLoc = y;
 	lamp->radius = 10.0;		// A 'unit' in VPX is about 0.5mm, so this is a 5mm radius for the lamp.
@@ -15,12 +15,14 @@ Lamp *lampCreate (double x, double y) {
 	return lamp;
 }
 
-void lampSetRadius (Lamp *lamp, double radius) {
+Lamp *lampSetRadius (Lamp *lamp, double radius) {
 	lamp->radius = radius;
+	return lamp;
 }
 
-void lampSetIntensity (Lamp *lamp, double intensity) {
+Lamp *lampSetIntensity (Lamp *lamp, double intensity) {
 	lamp->intensity = intensity;
+	return lamp;
 }
 
 void lampFree (Lamp *lamp) {

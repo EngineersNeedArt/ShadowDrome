@@ -25,8 +25,8 @@ BMContext *bitmap;
 SDContext *shadowContext;
 
 - (void) test0 {
-	shadowContext = sdContextCreate ("Test", 1024, 2048);
-	shadowContext->tempScalar = 200000;
+	shadowContext = sdContextCreate ("test", 1024, 2048);
+    shadowContext->tempScalar = 2000;
 	
 	sdContextAddLamp (shadowContext, lampCreate (450, 990));
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (550, 1010, 10));
@@ -35,10 +35,26 @@ SDContext *shadowContext;
 	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (330, 1050, 350, 1200), 0.5));
 }
 
-- (void) addKingOfDiamondsLightsAndObstacles {
-	shadowContext = sdContextCreate ("King of Diamonds", 1024, 2048);
-	shadowContext->tempScalar = 40000;
+- (void) test1 {
+	shadowContext = sdContextCreate ("test", 1024, 2048);
+	shadowContext->tempScalar = 300;
 	
+	sdContextAddLamp (shadowContext, lampCreate (256, 768));
+	sdContextAddLamp (shadowContext, lampCreate (768, 768));
+	sdContextAddLamp (shadowContext, lampCreate (256, 1280));
+	sdContextAddLamp (shadowContext, lampCreate (768, 1280));
+
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (550, 1010, 10));
+	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (380, 800, 400, 1200), 0.5));
+	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (330, 800, 350, 950));
+	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (330, 1050, 350, 1200), 0.5));
+}
+
+- (void) addKingOfDiamondsLightsAndObstacles {
+	shadowContext = sdContextCreate ("king_of_diamonds", 1024, 2048);
+    shadowContext->tempScalar = 150;
+    shadowContext->tempOffset = 100;
+    
 	sdContextAddLamp (shadowContext, lampCreate (432, 215));
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (432, 240, 8));
 	
@@ -136,13 +152,26 @@ SDContext *shadowContext;
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (702, 1376, 8));
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (600, 1435, 8));
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (653, 1328, 8));
-
-	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism(842, 482, 862, 1532));
+	
+	// Left and right wall.
+	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (0, 0, 25, 2048));
+	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (842, 482, 862, 2048), 0.7));
+	
+	
+	// Plunger lane fill lights.
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 500), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 700), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 900), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1100), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1300), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1500), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1700), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1900), 7.0));
 }
 
 - (void) addSlickChickLightsAndObstacles {
-	shadowContext = sdContextCreate ("Slick Chick", 1024, 2048);
-	shadowContext->tempScalar = 80000;
+	shadowContext = sdContextCreate ("slick_chick", 1024, 2048);
+	shadowContext->tempScalar = 300;
 	
 	// Lights.
 	sdContextAddLamp (shadowContext, lampCreate (436, 421));
@@ -215,25 +244,25 @@ SDContext *shadowContext;
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (832, 1351, 8));
 	
 	// Blocked off left and right sides.
-	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (844, 447, 867, 2048));
 	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (0, 0, 25, 2048));
+	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (844, 447, 867, 2048), 0.75));
 	
 	// Apron.
 	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (25, 1512, 397, 1723, 397, 2048, 25, 2048));
 	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (461, 1727, 850, 1509, 850, 2048, 461, 2048));
 	
 	// Arch.
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (38, 384 - 30, 0, 400 - 30, 0, 0, 38, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (97, 246 - 30, 38, 384 - 30, 38, 0, 97, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (166, 161 - 30, 97, 246 - 30, 97, 0, 166, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (257, 94 - 30, 166, 161 - 30, 166, 0, 257, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (383, 51 - 30, 257, 94 - 30, 257, 0, 383, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (527, 45 - 30, 383, 51 - 30, 383, 0, 527, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (630, 64 - 30, 527, 45 - 30, 527, 0, 630, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (730, 106 - 30, 630, 64 - 30, 630, 0, 730, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (816, 179 - 30, 730, 106 - 30, 730, 0, 816, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (895, 301 - 30, 816, 179 - 30, 816, 0, 895, 0));
-	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (936, 418 - 30, 895, 301 - 30, 895, 0, 936, 0));
+//	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (38, 384 - 30, 0, 400 - 30, 0, 0, 38, 0));
+//	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (97, 246 - 30, 38, 384 - 30, 38, 0, 97, 0));
+//	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (166, 161 - 30, 97, 246 - 30, 97, 0, 166, 0));
+//	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (257, 94 - 30, 166, 161 - 30, 166, 0, 257, 0));
+//	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (383, 51 - 30, 257, 94 - 30, 257, 0, 383, 0));
+//	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (527, 45 - 30, 383, 51 - 30, 383, 0, 527, 0));
+//	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (630, 64 - 30, 527, 45 - 30, 527, 0, 630, 0));
+//	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (730, 106 - 30, 630, 64 - 30, 630, 0, 730, 0));
+//	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (816, 179 - 30, 730, 106 - 30, 730, 0, 816, 0));
+//	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (895, 301 - 30, 816, 179 - 30, 816, 0, 895, 0));
+//	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (936, 418 - 30, 895, 301 - 30, 895, 0, 936, 0));
 	
 	// Voids.
 	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateCylinder (430, 522, 22), 0.0));
@@ -248,8 +277,8 @@ SDContext *shadowContext;
 }
 
 - (void) addDominoLightsAndObstacles {
-	shadowContext = sdContextCreate ("Domino", 1024, 2048);
-	shadowContext->tempScalar = 25000;	// 20000, kind of dark, 30000 maybe too bright?
+	shadowContext = sdContextCreate ("domino", 1024, 2048);
+	shadowContext->tempScalar = 100;
 	
 	// Lights.
 	sdContextAddLamp (shadowContext, lampCreate (94, 362));
@@ -344,21 +373,306 @@ SDContext *shadowContext;
 	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (795, 1188, 40, 2, -110));
 	
 	// Lanes.
-	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (243, 348, 253, 421));
-	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (339, 348, 349, 421));
-	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (437, 348, 447, 421));
-	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (535, 348, 545, 421));
-	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (630, 348, 640, 421));
+	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (243, 348, 253, 421), 0.75));
+	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (339, 348, 349, 421), 0.75));
+	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (437, 348, 447, 421), 0.75));
+	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (535, 348, 545, 421), 0.75));
+	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (630, 348, 640, 421), 0.75));
 	
 	// Blocked off left and right sides.
 	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (0, 0, 25, 2048));
-	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (838, 482, 861, 2048), 0.7));
+//	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (838, 482, 861, 2048), 0.75));
+	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (838, 482, 861, 2048));
+	
+	// Plunger lane fill lights.
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 500), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 700), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 900), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1100), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1300), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1500), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1700), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1900), 7.0));
 	
 	// Apron.
 	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (25, 1512, 397, 1723, 397, 2048, 25, 2048));
 	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (461, 1727, 850, 1509, 850, 2048, 461, 2048));
 }
 
+- (void) addBlueNoteLightsAndObstacles {
+	shadowContext = sdContextCreate ("blue_note", 1024, 2048);
+	shadowContext->tempScalar = 100;
+	
+	// Lights.
+	sdContextAddLamp (shadowContext, lampCreate (259, 341));
+	sdContextAddLamp (shadowContext, lampCreate (361, 349));
+	sdContextAddLamp (shadowContext, lampCreate (464, 344));
+	sdContextAddLamp (shadowContext, lampCreate (560, 348));
+	sdContextAddLamp (shadowContext, lampCreate (805, 346));
+	sdContextAddLamp (shadowContext, lampCreate (814, 596));
+	sdContextAddLamp (shadowContext, lampCreate (777, 858));
+	sdContextAddLamp (shadowContext, lampCreate (813, 953));
+	sdContextAddLamp (shadowContext, lampCreate (128, 1458));
+	sdContextAddLamp (shadowContext, lampCreate (167, 1565));
+	sdContextAddLamp (shadowContext, lampCreate (639, 1421));
+	sdContextAddLamp (shadowContext, lampCreate (687, 1321));
+	sdContextAddLamp (shadowContext, lampCreate (87, 440));
+	sdContextAddLamp (shadowContext, lampCreate (78, 564));
+	sdContextAddLamp (shadowContext, lampCreate (72, 761));
+	sdContextAddLamp (shadowContext, lampCreate (73, 777));
+	sdContextAddLamp (shadowContext, lampCreate (71, 882));
+	sdContextAddLamp (shadowContext, lampCreate (68, 989));
+	sdContextAddLamp (shadowContext, lampCreate (72, 1098));
+	sdContextAddLamp (shadowContext, lampCreate (71, 1207));
+	
+	// Bumpers.
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (261, 600, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (449, 610, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (651, 520, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (319, 785, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (628, 725, 40));
+	
+	// Targets.
+	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (94, 563, 40, 2, -90));
+	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (94, 671, 40, 2, -90));
+	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (94, 776, 40, 2, -90));
+	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (94, 879, 40, 2, -90));
+	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (94, 988, 40, 2, -90));
+	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (94, 1096, 40, 2, -90));
+	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (94, 1204, 40, 2, -90));
+	
+	// Lanes.
+	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (255, 288, 265, 404), 0.75));
+	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (355, 288, 365, 404), 0.75));
+	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (456, 288, 466, 404), 0.75));
+	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (552, 288, 562, 404), 0.75));
+
+	// Posts.
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (260, 289, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (260, 404, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (359, 287, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (360, 404, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (461, 287, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (461, 405, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (557, 291, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (557, 400, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (88, 343, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (93, 509, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (93, 616, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (93, 720, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (92, 827, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (91, 935, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (89, 1042, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (88, 1148, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (88, 1258, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (85, 1361, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (107, 1403, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (190, 1615, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (602, 1470, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (698, 1420, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (697, 1237, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (817, 1110, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (820, 1068, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (441, 880, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (441, 901, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (576, 881, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (576, 901, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (607, 865, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (609, 915, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (619, 8989, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (719, 991, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (729, 975, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (753, 942, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (810, 744, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (816, 708, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (820, 437, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (815, 401, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (775, 257, 8));
+	
+	// Blocked off left and right sides.
+	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (0, 0, 25, 2048));
+	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (838, 482, 861, 2048));
+	
+	// Plunger lane fill lights.
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 500), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 700), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 900), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1100), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1300), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1500), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1700), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1900), 7.0));
+}
+
+- (void) addGigiLightsAndObstacles {
+	shadowContext = sdContextCreate ("gigi", 1024, 2048);
+    shadowContext->tempScalar = 2000;
+    shadowContext->tempOffset = 100;
+
+	// Lights.
+	sdContextAddLamp (shadowContext, lampCreate (104, 368));
+	sdContextAddLamp (shadowContext, lampCreate (772, 368));
+	sdContextAddLamp (shadowContext, lampCreate (49, 620));
+	sdContextAddLamp (shadowContext, lampCreate (828, 620));
+	sdContextAddLamp (shadowContext, lampCreate (126, 1363));
+	sdContextAddLamp (shadowContext, lampCreate (735, 1363));
+	sdContextAddLamp (shadowContext, lampCreate (218, 1472));
+	sdContextAddLamp (shadowContext, lampCreate (652, 1472));
+	
+	// Bumpers.
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (435, 267, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (320, 434, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (552, 434, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (203, 598, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (441, 620, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (672, 598, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (89, 767, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (325, 793, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (550, 793, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (790, 767, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (211, 960, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (666, 960, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (89, 1145, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (790, 1145, 40));
+	
+	// Targets.
+	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (119, 394, 40, 2, -35));
+	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (752, 395, 40, 2, 35));
+	
+	// Posts.
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (101, 261, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (768, 261, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (157, 346, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (714, 346, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (742, 232, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (49, 417, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (826, 417, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (50, 453, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (824, 458, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (50, 683, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (824, 675, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (118, 896, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (755, 896, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (118, 995, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (755, 995, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (117, 1313, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (754, 1313, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (117, 1432, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (754, 1432, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (261, 1506, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (607, 1506, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (181, 1407, 8));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (686, 1407, 8));
+	
+	// Lanes.
+	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (113, 896, 123, 995));
+	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (750, 896, 760, 995));
+	
+	// Blocked off left and right sides.
+	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (0, 0, 25, 2048));
+	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (838, 482, 861, 2048));
+	
+	// Plunger lane fill lights.
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 500), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 700), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 900), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1100), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1300), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1500), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1700), 7.0));
+	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1900), 7.0));
+}
+
+- (void) addBaseballLightsAndObstacles {
+    shadowContext = sdContextCreate ("baseball", 1024, 2048);
+    shadowContext->tempScalar = 75;
+    shadowContext->tempOffset = 0;
+    
+    // Lights.
+    sdContextAddLamp (shadowContext, lampCreate (67, 430));
+    sdContextAddLamp (shadowContext, lampCreate (800, 418));
+    sdContextAddLamp (shadowContext, lampCreate (90, 671));
+    sdContextAddLamp (shadowContext, lampCreate (431, 690));
+    sdContextAddLamp (shadowContext, lampCreate (774, 672));
+    sdContextAddLamp (shadowContext, lampCreate (278, 350));
+    sdContextAddLamp (shadowContext, lampCreate (382, 348));
+    sdContextAddLamp (shadowContext, lampCreate (480, 348));
+    sdContextAddLamp (shadowContext, lampCreate (575, 347));
+    sdContextAddLamp (shadowContext, lampCreate (116, 897));
+    sdContextAddLamp (shadowContext, lampCreate (742, 892));
+    sdContextAddLamp (shadowContext, lampCreate (127, 1029));
+    sdContextAddLamp (shadowContext, lampCreate (739, 1024));
+    sdContextAddLamp (shadowContext, lampCreate (167, 1318));
+    sdContextAddLamp (shadowContext, lampCreate (693, 1318));
+    sdContextAddLamp (shadowContext, lampCreate (217, 1437));
+    sdContextAddLamp (shadowContext, lampCreate (644, 1436));
+    
+    // Bumpers.
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (244, 525, 40));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (616, 525, 40));
+
+    // Targets.
+//    sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (119, 394, 40, 2, -35));
+    
+    // Posts.
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (278, 299, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (382, 299, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (479, 299, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (573, 299, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (278, 375, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (382, 375, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (479, 375, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (573, 375, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (47, 465, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (113, 359, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (759, 320, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (816, 460, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (430, 512, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (360, 664, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (500, 664, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (430, 737, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (49, 495, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (811, 495, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (152, 662, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (713, 662, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (45, 750, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (819, 750, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (212, 770, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (649, 770, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (104, 857, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (757, 857, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (291, 959, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (568, 959, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (183, 1014, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (679, 1014, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (101, 1075, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (758, 1075, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (41, 1161, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (819, 1161, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (152, 1248, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (710, 1248, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (154, 1418, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (707, 1418, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (258, 1478, 8));
+    sdContextAddObstacle (shadowContext, obstacleCreateCylinder (603, 1478, 8));
+    
+    // Lanes.
+//  sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (113, 896, 123, 995));
+    
+    // Blocked off left and right sides.
+    sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (0, 0, 25, 2048));
+    sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (838, 482, 861, 2048));
+    
+    // Plunger lane fill lights.
+    sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 500), 7.0));
+    sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 700), 7.0));
+    sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 900), 7.0));
+    sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1100), 7.0));
+    sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1300), 7.0));
+    sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1500), 7.0));
+    sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1700), 7.0));
+    sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1900), 7.0));
+}
 - (void) renderPlayfield {
 	bmContextFillBuffer (bitmap, 0, 0, 0, 255);
 	sdContextRenderToBitmap (shadowContext, bitmap);
@@ -386,12 +700,13 @@ SDContext *shadowContext;
 	bitmap = bmContextCreate (bitmapWidth, bitmapHeight);
 	
 	[self test0];
+//	[self test1];
 //	[self addKingOfDiamondsLightsAndObstacles];
 //	[self addSlickChickLightsAndObstacles];
-//	[self addDominoLightsAndObstacles];
-
-//	char *json = sdContextJSONRepresentation (shadowContext);
-//	self.contextJSON = [NSString stringWithCString: json encoding: NSASCIIStringEncoding];
+// 	[self addDominoLightsAndObstacles];
+//	[self addBlueNoteLightsAndObstacles];
+//	[self addGigiLightsAndObstacles];
+    [self addBaseballLightsAndObstacles];
 	
 	[self renderPlayfield];
 }
@@ -409,11 +724,17 @@ SDContext *shadowContext;
 	[self renderPlayfield];
 }
 
+- (IBAction) tempSlider2: (id) sender {
+    shadowContext->tempOffset = [sender intValue];
+    [self renderPlayfield];
+}
+
 - (NSData *) getFullsizeBitmapData {
 	NSData *bitmapData = NULL;
 	BMContext *fullBitmap;
 	
 	fullBitmap = bmContextCreate (1024, 2048);
+//	fullBitmap = bmContextCreate (2048, 4096);
 	bmContextFillBuffer (fullBitmap, 0, 0, 0, 255);
 	sdContextRenderToBitmap (shadowContext, fullBitmap);
 	

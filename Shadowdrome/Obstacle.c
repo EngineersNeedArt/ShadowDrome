@@ -9,7 +9,7 @@
 #pragma mark - Private
 
 Obstacle *_obstacleCreateBase (void) {
-	Obstacle *obstacle = malloc (sizeof(Obstacle));
+	Obstacle *obstacle = malloc (sizeof (Obstacle));
 	obstacle->kind = ObstacleKindPolygonalPrism;
 	obstacle->xCenter = 0.0;
 	obstacle->yCenter = 0.0;
@@ -59,7 +59,7 @@ Obstacle *obstacleCreate (double *vertexArray, int vertexCount) {
 	
 	// Allocate storage for vertices.
 	obstacle->numVertices = vertexCount;
-	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
+	obstacle->vertexArray = malloc (sizeof (double) * obstacle->numVertices * 2);
 	
 	// Copy over vertices. Keep running total of x and y to find center later.
 	double *vertexPtr = obstacle->vertexArray;
@@ -88,7 +88,7 @@ Obstacle *obstacleCreateQuadPrism (double x0, double y0, double x1, double y1, d
 	Obstacle *obstacle = _obstacleCreateBase ();
 	obstacle->kind = ObstacleKindPolygonalPrism;
 	obstacle->numVertices = 4;
-	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
+	obstacle->vertexArray = malloc (sizeof (double) * obstacle->numVertices * 2);
 	
 	double *vertexPtr = obstacle->vertexArray;
 	*vertexPtr = x0;
@@ -121,7 +121,7 @@ Obstacle *obstacleCreateRectangluarPrism (double x0, double y0, double x1, doubl
 	obstacle->width = x1 - x0;
 	obstacle->height = y1 - y0;
 	obstacle->numVertices = 4;
-	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
+	obstacle->vertexArray = malloc (sizeof (double) * obstacle->numVertices * 2);
 	
 	double *vertexPtr = obstacle->vertexArray;
 	*vertexPtr = x0;
@@ -159,7 +159,7 @@ Obstacle *obstacleCreateRotatedRectangularPrism (double x, double y, double widt
 	obstacle->height = height;
 	obstacle->rotationDegrees = rotationDegrees;
 	obstacle->numVertices = 4;
-	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
+	obstacle->vertexArray = malloc (sizeof (double) * obstacle->numVertices * 2);
 	
 	double *vertexPtr = obstacle->vertexArray;
 	double angle = rotationDegrees / 180.0 * M_PI;
@@ -207,7 +207,7 @@ Obstacle *obstacleCreateCylinder (double x, double y, double radius) {
 	if (obstacle->numVertices < 8) {
 		obstacle->numVertices = 8;
 	}
-	obstacle->vertexArray = malloc (sizeof(double) * obstacle->numVertices * 2);
+	obstacle->vertexArray = malloc (sizeof (double) * obstacle->numVertices * 2);
 	
 	double *vertexPtr = obstacle->vertexArray;
 	for (int i = 0; i < obstacle->numVertices; i++) {

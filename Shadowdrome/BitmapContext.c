@@ -6,10 +6,10 @@
 #include "BitmapContext.h"
 
 BMContext *bmContextCreate (int width, int height) {
-	BMContext *context = malloc (sizeof(BMContext));
+	BMContext *context = malloc (sizeof (BMContext));
 	context->width = width;
 	context->height = height;
-	context->buffer = malloc (sizeof(unsigned char) * width * height * 4);
+	context->buffer = malloc (sizeof (unsigned char) * width * height * 4);
 	
 	// Clear context to black.
 	bmContextFillBuffer (context, 0, 0, 0, 255);
