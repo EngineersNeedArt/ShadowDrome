@@ -159,12 +159,12 @@ void _sdGetFilamentPointForLamp (Lamp *lamp, double relX, double relY, double di
 }
 
 double _sdMapIntensity (SDContext *context, double distanceSquared, double intensity) {
-    if (0) {
-        return (intensity * (double) context->tempScalar) / (distanceSquared + 10000);
-    } else {
-        double distance = sqrt (distanceSquared) + (double) context->tempOffset;
-        return (intensity * (double) context->tempScalar) / (distance * distance);
-    }
+	if (0) {
+    	return (intensity * (double) context->tempScalar) / (distanceSquared + 10000);
+	} else {
+    	double distance = sqrt (distanceSquared) + (double) context->tempOffset;
+    	return (intensity * (double) context->tempScalar) / (distance * distance);
+	}
 //	double distance = sqrt (distanceSquared) / 10;
 //	return (intensity * 100000) / ((distance + 100) * (distance + 100));
 //	return (intensity * 500) / (distance * distance);
@@ -228,14 +228,19 @@ SDContext *sdContextCreate (char *name, int width, int height) {
 	context->lampArray = NULL;
 	context->obstacleCount = 0;
 	context->obstacleArray = NULL;
-    
-    context->tempScalar = 200;
-    context->tempOffset = 0;
-    
+	
+	context->tempScalar = 200;
+	context->tempOffset = 0;
+	
 	return context;
 }
 
 int sdContextAddLamp (SDContext *context, Lamp *lamp) {
+	// Param check.
+	if (context == NULL) {
+		return 0;
+	}
+	
 	Lamp *wasLampArray = context->lampArray;
 	context->lampArray = malloc(sizeof (Lamp) * (context->lampCount + 1));
 	
@@ -258,6 +263,11 @@ int sdContextAddLamp (SDContext *context, Lamp *lamp) {
 }
 
 int sdContextAddObstacle (SDContext *context, Obstacle *obstacle) {
+	// Param check.
+	if (context == NULL) {
+		return 0;
+	}
+	
 	Obstacle *wasObstacleArray = context->obstacleArray;
 	context->obstacleArray = malloc(sizeof (Obstacle) * (context->obstacleCount + 1));
 	
@@ -279,11 +289,44 @@ int sdContextAddObstacle (SDContext *context, Obstacle *obstacle) {
 	return context->obstacleCount;
 }
 
+int sdContextNumberOfLamps (SDContext *context) {
+	// Param check.
+	if (context == NULL) {
+		return 0;
+	}
+	return context->lampCount;
+}
+
+int sdContextNumberOfObstacles (SDContext *context) {
+	// Param check.
+	if (context == NULL) {
+		return 0;
+	}
+	return context->obstacleCount;
+}
+
+Lamp *sdContextLampAtIndex (SDContext *context, int index) {
+	// Param check.
+	if ((context == NULL) || (index < 0) || (index >= context->lampCount)) {
+		return NULL;
+	}
+	return &(context->lampArray[index]);
+}
+
+Obstacle *sdContextObstacleAtIndex (SDContext *context, int index) {
+	// Param check.
+	if ((context == NULL) || (index < 0) || (index >= context->obstacleCount)) {
+		return NULL;
+	}
+	return &(context->obstacleArray[index]);
+}
+
 int sdContextRenderToBitmap (SDContext *context, BMContext *bitmap) {
-    // NOP.
-    if (context == NULL) {
-        return 0;
-    }
+	// Param check.
+	if (context == NULL) {
+    	return 0;
+	}
+	
 	int width = bmContextWidth (bitmap);
 	int height = bmContextHeight (bitmap);
 	double scale = 1.0;
@@ -296,9 +339,9 @@ int sdContextRenderToBitmap (SDContext *context, BMContext *bitmap) {
 			double scaledX = (double) x / scale;
 			double scaledY = (double) y / scale;
 			double luminance = _sdContextGetLuminanceForPoint (context, scaledX, scaledY);
-            luminance = luminance * 255.0;
-            luminance = MIN (luminance, 255.0);
-            luminance = MAX (luminance, 0.0);
+	    	luminance = luminance * 255.0;
+	    	luminance = MIN (luminance, 255.0);
+	    	luminance = MAX (luminance, 0.0);
 			unsigned char red, green, blue, alpha;
 			bmContextGetPixel (bitmap, x, y, &red, &green, &blue, &alpha);
 			if (alpha > round (luminance)) {

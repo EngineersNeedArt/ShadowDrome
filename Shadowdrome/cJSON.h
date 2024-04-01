@@ -94,7 +94,7 @@ then using the CJSON_API_VISIBILITY flag to "export" the same symbols the way CJ
 #define cJSON_String (1 << 4)
 #define cJSON_Array  (1 << 5)
 #define cJSON_Object (1 << 6)
-#define cJSON_Raw    (1 << 7) /* raw json */
+#define cJSON_Raw	(1 << 7) /* raw json */
 
 #define cJSON_IsReference 256
 #define cJSON_StringIsConst 512
@@ -102,31 +102,31 @@ then using the CJSON_API_VISIBILITY flag to "export" the same symbols the way CJ
 /* The cJSON structure: */
 typedef struct cJSON
 {
-    /* next/prev allow you to walk array/object chains. Alternatively, use GetArraySize/GetArrayItem/GetObjectItem */
-    struct cJSON *next;
-    struct cJSON *prev;
-    /* An array or object item will have a child pointer pointing to a chain of the items in the array/object. */
-    struct cJSON *child;
+	/* next/prev allow you to walk array/object chains. Alternatively, use GetArraySize/GetArrayItem/GetObjectItem */
+	struct cJSON *next;
+	struct cJSON *prev;
+	/* An array or object item will have a child pointer pointing to a chain of the items in the array/object. */
+	struct cJSON *child;
 
-    /* The type of the item, as above. */
-    int type;
+	/* The type of the item, as above. */
+	int type;
 
-    /* The item's string, if type==cJSON_String  and type == cJSON_Raw */
-    char *valuestring;
-    /* writing to valueint is DEPRECATED, use cJSON_SetNumberValue instead */
-    int valueint;
-    /* The item's number, if type==cJSON_Number */
-    double valuedouble;
+	/* The item's string, if type==cJSON_String  and type == cJSON_Raw */
+	char *valuestring;
+	/* writing to valueint is DEPRECATED, use cJSON_SetNumberValue instead */
+	int valueint;
+	/* The item's number, if type==cJSON_Number */
+	double valuedouble;
 
-    /* The item's name string, if this item is the child of, or is in the list of subitems of an object. */
-    char *string;
+	/* The item's name string, if this item is the child of, or is in the list of subitems of an object. */
+	char *string;
 } cJSON;
 
 typedef struct cJSON_Hooks
 {
-      /* malloc/free are CDECL on Windows regardless of the default calling convention of the compiler, so ensure the hooks allow passing those functions directly. */
-      void *(CJSON_CDECL *malloc_fn)(size_t sz);
-      void (CJSON_CDECL *free_fn)(void *ptr);
+	  /* malloc/free are CDECL on Windows regardless of the default calling convention of the compiler, so ensure the hooks allow passing those functions directly. */
+	  void *(CJSON_CDECL *malloc_fn)(size_t sz);
+	  void (CJSON_CDECL *free_fn)(void *ptr);
 } cJSON_Hooks;
 
 typedef int cJSON_bool;
@@ -281,9 +281,9 @@ CJSON_PUBLIC(char*) cJSON_SetValuestring(cJSON *object, const char *valuestring)
 
 /* If the object is not a boolean type this does nothing and returns cJSON_Invalid else it returns the new type*/
 #define cJSON_SetBoolValue(object, boolValue) ( \
-    (object != NULL && ((object)->type & (cJSON_False|cJSON_True))) ? \
-    (object)->type=((object)->type &(~(cJSON_False|cJSON_True)))|((boolValue)?cJSON_True:cJSON_False) : \
-    cJSON_Invalid\
+	(object != NULL && ((object)->type & (cJSON_False|cJSON_True))) ? \
+	(object)->type=((object)->type &(~(cJSON_False|cJSON_True)))|((boolValue)?cJSON_True:cJSON_False) : \
+	cJSON_Invalid\
 )
 
 /* Macro for iterating over an array or object */
