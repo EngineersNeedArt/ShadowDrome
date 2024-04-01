@@ -17,6 +17,25 @@
 @property (strong) IBOutlet NSWindow *window;
 @property (strong) IBOutlet NSImageView *shadowImageView;
 @property (strong) IBOutlet NSTableView *contextTableView;
+@property (strong) IBOutlet NSTabView *detailTabView;
+
+@property (strong) IBOutlet NSTextField *lampXTextField;
+@property (strong) IBOutlet NSTextField *lampYTextField;
+@property (strong) IBOutlet NSTextField *lampRadiusTextField;
+@property (strong) IBOutlet NSTextField *lampIntensityTextField;
+
+@property (strong) IBOutlet NSTextField *obstacleRectangleXTextField;
+@property (strong) IBOutlet NSTextField *obstacleRectangleYTextField;
+@property (strong) IBOutlet NSTextField *obstacleRectangleWidthTextField;
+@property (strong) IBOutlet NSTextField *obstacleRectangleHeightTextField;
+@property (strong) IBOutlet NSTextField *obstacleRectangleRotationTextField;
+@property (strong) IBOutlet NSTextField *obstacleRectangleOpacityTextField;
+
+@property (strong) IBOutlet NSTextField *obstacleCylinderXTextField;
+@property (strong) IBOutlet NSTextField *obstacleCylinderYTextField;
+@property (strong) IBOutlet NSTextField *obstacleCylinderRadiusTextField;
+@property (strong) IBOutlet NSTextField *obstacleCylinderOpacityTextField;
+
 @property (strong) NSString *contextJSON;
 @end
 
@@ -25,7 +44,8 @@
 BMContext *bitmap;
 SDContext *shadowContext;
 
-// NSTableViewDataSource
+#pragma mark - NSTableViewDataSource
+
 - (NSInteger) numberOfRowsInTableView: (NSTableView *) tableView {
 	if (shadowContext == NULL) {
 		return 0;
@@ -34,7 +54,8 @@ SDContext *shadowContext;
 	return sdContextNumberOfLamps (shadowContext) + sdContextNumberOfObstacles (shadowContext);
 }
 
-// NSTableViewDelegate
+#pragma mark - NSTableViewDelegate
+
 -(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
 	if (shadowContext == NULL) {
 		return 0;
@@ -68,11 +89,66 @@ SDContext *shadowContext;
 		}
 	} else {
 		Lamp *lamp = sdContextLampAtIndex (shadowContext, (int) row);
-		cell.textField.stringValue = [NSString stringWithFormat: @"💡 %ld, (x=%ld, y=%ld), r=%ld, i=%ld",
-				(long) row, (long) round (lamp->xLoc), (long) round (lamp->yLoc),
-				(long) round (lamp->radius), (long) round (lamp->intensity)];
+		cell.textField.stringValue = [NSString stringWithFormat: @"💡 %ld, (%ld, %ld)",
+				(long) row, (long) round (lamp->xLoc), (long) round (lamp->yLoc)];
 	}
 	return cell;
+}
+
+- (void) tableViewSelectionDidChange :(NSNotification *) notification {
+	if ([notification object] == _contextTableView) {
+		NSInteger selectedRow = [_contextTableView selectedRow];
+		[self showDetailForObjectAtIndex: selectedRow];
+	}
+}
+
+- (void) showDetailForObjectAtIndex: (NSInteger) index {
+	if ((shadowContext == NULL) || (index < 0) || (index >= (sdContextNumberOfLamps (shadowContext) + sdContextNumberOfObstacles (shadowContext)))) {
+		[_detailTabView selectTabViewItemAtIndex: 4];
+		return;
+	}
+	
+	if (index < sdContextNumberOfLamps (shadowContext)) {
+		[_detailTabView selectTabViewItemAtIndex: 0];
+		Lamp *lamp = sdContextLampAtIndex (shadowContext, (int) index);
+		if (lamp) {
+			[_lampXTextField setIntValue: lamp->xLoc];
+			[_lampYTextField setIntValue: lamp->yLoc];
+			[_lampRadiusTextField setIntValue: lamp->radius];
+			[_lampIntensityTextField setIntValue: lamp->intensity];
+		}
+	} else {
+		index = index - sdContextNumberOfLamps (shadowContext);
+		Obstacle *obstacle = sdContextObstacleAtIndex (shadowContext, (int) index);
+		if (obstacle) {
+			switch (obstacle->kind) {
+				case ObstacleKindPolygonalPrism:
+				[_detailTabView selectTabViewItemAtIndex: 1];
+				break;
+				
+				case ObstacleKindCylinder:
+				[_detailTabView selectTabViewItemAtIndex: 2];
+				[_obstacleCylinderXTextField setIntValue: obstacle->xCenter];
+				[_obstacleCylinderYTextField setIntValue: obstacle->yCenter];
+				[_obstacleCylinderRadiusTextField setIntValue: obstacle->radius];
+				[_obstacleCylinderOpacityTextField setFloatValue: obstacle->opacity];
+				break;
+				
+				case ObstacleKindRectangularPrism:
+				[_detailTabView selectTabViewItemAtIndex: 3];
+				[_obstacleRectangleXTextField setIntValue: obstacle->xCenter];
+				[_obstacleRectangleYTextField setIntValue: obstacle->yCenter];
+				[_obstacleRectangleWidthTextField setIntValue: obstacle->width];
+				[_obstacleRectangleHeightTextField setIntValue: obstacle->height];
+				[_obstacleRectangleRotationTextField setFloatValue: obstacle->rotationDegrees];
+				[_obstacleRectangleOpacityTextField setFloatValue: obstacle->opacity];
+				break;
+				
+				default:
+				break;
+			}
+		}
+	}
 }
 
 - (void) test0 {
