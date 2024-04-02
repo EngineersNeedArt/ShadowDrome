@@ -102,6 +102,79 @@ SDContext *shadowContext;
 	}
 }
 
+- (void) controlTextDidEndEditing: (NSNotification *) obj {
+	if (shadowContext == NULL) {
+		return;
+	}
+	NSInteger row = [_contextTableView selectedRow];
+	if (row >= 0) {
+		NSTextField *textField = [obj object];
+		NSInteger tag = [textField tag];
+		NSInteger index = row;
+		if (index >= sdContextNumberOfLamps (shadowContext)) {
+			index -= sdContextNumberOfLamps (shadowContext);
+			Obstacle *obstacle = sdContextObstacleAtIndex (shadowContext, (int) index);
+			switch (tag) {
+				case 0:
+				obstacle->xCenter = [textField floatValue];
+				break;
+				
+				case 1:
+				obstacle->yCenter = [textField floatValue];
+				break;
+				
+				case 2:
+				obstacle->radius = round ([textField floatValue]);
+				break;
+				
+				case 3:
+				obstacle->rotationDegrees = [textField floatValue];
+				break;
+				
+				case 4:
+				obstacle->width = round ([textField floatValue]);
+				break;
+				
+				case 5:
+				obstacle->height = round ([textField floatValue]);
+				break;
+				
+				case 6:
+				obstacle->opacity = [textField floatValue];
+				break;
+				
+				default:
+				break;
+			}
+		} else {
+			Lamp *lamp = sdContextLampAtIndex (shadowContext, (int) index);
+			switch (tag) {
+				case 0:
+				lamp->xLoc = [textField floatValue];
+				break;
+				
+				case 1:
+				lamp->yLoc = [textField floatValue];
+				break;
+				
+				case 2:
+				lamp->radius = round ([textField floatValue]);
+				break;
+				
+				case 3:
+				lamp->intensity = round ([textField floatValue]);
+				break;
+					
+				default:
+				break;
+			}
+		}
+		[_contextTableView reloadData];
+		[_contextTableView selectRow: row byExtendingSelection: NO];
+		[self renderPlayfield];
+	}
+}
+
 - (void) showDetailForObjectAtIndex: (NSInteger) index {
 	if ((shadowContext == NULL) || (index < 0) || (index >= (sdContextNumberOfLamps (shadowContext) + sdContextNumberOfObstacles (shadowContext)))) {
 		[_detailTabView selectTabViewItemAtIndex: 4];
