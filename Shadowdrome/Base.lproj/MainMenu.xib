@@ -754,6 +754,9 @@
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
+                                        <connections>
+                                            <action selector="addLampAction:" target="Voe-Tx-rLC" id="g3N-ay-3r8"/>
+                                        </connections>
                                     </button>
                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gie-1X-K8u">
                                         <rect key="frame" x="75" y="6" width="64" height="32"/>
@@ -762,6 +765,9 @@
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
+                                        <connections>
+                                            <action selector="addCylindricalObstacleAction:" target="Voe-Tx-rLC" id="Z0a-3D-oyf"/>
+                                        </connections>
                                     </button>
                                     <tabView type="noTabsNoBorder" initialItem="4se-nG-vSd" id="knf-GN-O7t">
                                         <rect key="frame" x="0.0" y="47" width="398" height="104"/>
@@ -785,13 +791,15 @@
                                                         <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rUP-an-aav">
                                                             <rect key="frame" x="78" y="68" width="60" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="Kwu-Vy-zms">
+                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="Kwu-Vy-zms">
                                                                 <font key="font" usesAppearanceFont="YES"/>
                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="rh8-rx-kwi"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="dhg-k4-fiw"/>
+                                                                <outlet property="nextKeyView" destination="rDJ-LH-gXj" id="WxP-ii-rik"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AuL-us-Tmp">
@@ -813,6 +821,8 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="g4A-lY-b4M"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="Nkm-US-XGb"/>
+                                                                <outlet property="nextKeyView" destination="PSO-FO-BhR" id="V70-1V-RJA"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T5T-XY-cvc">
@@ -834,6 +844,8 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="yrV-Vu-iAj"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="APX-Rb-zLA"/>
+                                                                <outlet property="nextKeyView" destination="eq3-gH-63A" id="U1k-kn-j8O"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="h6w-hm-xyA">
@@ -855,10 +867,14 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="tbT-WA-cTx"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="eBj-nC-r3W"/>
                                                             </connections>
                                                         </textField>
                                                     </subviews>
                                                 </view>
+                                                <connections>
+                                                    <outlet property="initialFirstResponder" destination="rUP-an-aav" id="iao-Lh-28U"/>
+                                                </connections>
                                             </tabViewItem>
                                             <tabViewItem label="Item 1" identifier="" id="4Ds-Df-8lI" userLabel="Polygon">
                                                 <view key="view" id="B2U-HC-0XN">
@@ -884,6 +900,8 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="3Y3-gR-Auo"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="ebi-Ot-RjV"/>
+                                                                <outlet property="nextKeyView" destination="0RL-jF-A3X" id="UEZ-nd-pd8"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qbG-0m-uEh">
@@ -905,6 +923,7 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="njL-Qk-hWL"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="rP8-9i-0lW"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j73-1M-c8y">
@@ -918,6 +937,9 @@
                                                         </textField>
                                                     </subviews>
                                                 </view>
+                                                <connections>
+                                                    <outlet property="initialFirstResponder" destination="Dgq-1d-xLK" id="bXx-gJ-9gp"/>
+                                                </connections>
                                             </tabViewItem>
                                             <tabViewItem label="Item 2" identifier="" id="5g8-mM-WwK" userLabel="Cylinder">
                                                 <view key="view" id="kxk-Q7-0Aq">
@@ -943,6 +965,8 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="0P8-lw-7eQ"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="GuH-ld-tlG"/>
+                                                                <outlet property="nextKeyView" destination="NR2-Mo-T9C" id="rwE-UV-l2V"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uPo-vO-Gn0">
@@ -964,6 +988,8 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="Hgr-6t-BnZ"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="pWo-Gq-95q"/>
+                                                                <outlet property="nextKeyView" destination="442-VV-Rs4" id="qyH-Gi-qyU"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zt5-Z4-qAs">
@@ -985,6 +1011,8 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="pvv-v5-Ux5"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="1ed-hz-xzm"/>
+                                                                <outlet property="nextKeyView" destination="Lne-4M-4Z3" id="SE4-dC-nGc"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wGH-K9-eWv">
@@ -1006,10 +1034,14 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="ccw-Tb-ziM"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="XX1-d1-kwL"/>
                                                             </connections>
                                                         </textField>
                                                     </subviews>
                                                 </view>
+                                                <connections>
+                                                    <outlet property="initialFirstResponder" destination="YUi-kC-0wP" id="DSV-zX-hUT"/>
+                                                </connections>
                                             </tabViewItem>
                                             <tabViewItem label="Item 3" identifier="" id="vLl-03-Xk8" userLabel="Rectangle">
                                                 <view key="view" id="0ue-xf-q16">
@@ -1035,6 +1067,8 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="9lx-9l-fN0"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="H5m-wb-dwY"/>
+                                                                <outlet property="nextKeyView" destination="sSP-Bg-swF" id="RXl-BY-Dl2"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YdP-7b-Gz8">
@@ -1056,6 +1090,8 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="OXg-rp-kOG"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="uQd-lA-5BE"/>
+                                                                <outlet property="nextKeyView" destination="agN-Z4-Mfq" id="yXg-3t-CsH"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Gx6-OO-WSg">
@@ -1077,6 +1113,8 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="Cig-sV-Hc4"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="TAy-rD-K1z"/>
+                                                                <outlet property="nextKeyView" destination="11e-H7-z7U" id="5K1-lT-yRA"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cNs-w0-QCO">
@@ -1098,6 +1136,8 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="Ish-au-AsZ"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="3Up-eb-aiS"/>
+                                                                <outlet property="nextKeyView" destination="Hit-Po-uAT" id="Xnt-Bb-kBT"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Yat-lh-gIA">
@@ -1108,6 +1148,9 @@
                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
+                                                            <connections>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="1PL-e0-WcE"/>
+                                                            </connections>
                                                         </textField>
                                                         <textField verticalHuggingPriority="750" fixedFrame="YES" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="Hit-Po-uAT">
                                                             <rect key="frame" x="78" y="10" width="60" height="21"/>
@@ -1119,6 +1162,8 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="mxw-ce-AHB"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="oiB-8i-WOC"/>
+                                                                <outlet property="nextKeyView" destination="NDS-6Z-6Dw" id="SwH-xP-u6b"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fu2-Na-4w5">
@@ -1140,18 +1185,22 @@
                                                             </textFieldCell>
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="IhO-V2-Hp4"/>
+                                                                <outlet property="formatter" destination="AYR-Rj-5Ch" id="paf-f8-L9H"/>
                                                             </connections>
                                                         </textField>
                                                     </subviews>
                                                 </view>
+                                                <connections>
+                                                    <outlet property="initialFirstResponder" destination="MPD-xq-ypY" id="t21-hT-dW2"/>
+                                                </connections>
                                             </tabViewItem>
                                             <tabViewItem label="Item 4" identifier="" id="4se-nG-vSd" userLabel="Nothing">
                                                 <view key="view" id="qFK-4q-spI">
-                                                    <rect key="frame" x="0.0" y="0.0" width="398" height="105"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="398" height="104"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4eB-Ok-ASD">
-                                                            <rect key="frame" x="145" y="45" width="109" height="16"/>
+                                                            <rect key="frame" x="145" y="44" width="109" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Nothing Selected" id="kBV-x4-obY">
                                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1238,6 +1287,9 @@
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
+                                        <connections>
+                                            <action selector="addRectangularObstacleAction:" target="Voe-Tx-rLC" id="79N-lT-bim"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                             </customView>
@@ -1310,5 +1362,6 @@
             </view>
             <point key="canvasLocation" x="313" y="945"/>
         </window>
+        <numberFormatter formatterBehavior="default10_4" numberStyle="decimal" formatWidth="-1" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="AYR-Rj-5Ch"/>
     </objects>
 </document>

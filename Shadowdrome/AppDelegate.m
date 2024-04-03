@@ -117,31 +117,52 @@ SDContext *shadowContext;
 			Obstacle *obstacle = sdContextObstacleAtIndex (shadowContext, (int) index);
 			switch (tag) {
 				case 0:
-				obstacleSetXY (obstacle, [textField floatValue], obstacle->yCenter);
+				if (obstacle->xCenter == round ([textField doubleValue])) {
+					return;
+				}
+				obstacleSetXY (obstacle, round ([textField doubleValue]), obstacle->yCenter);
 				break;
 				
 				case 1:
-				obstacleSetXY (obstacle, obstacle->xCenter, [textField floatValue]);
+				if (obstacle->yCenter == round ([textField doubleValue])) {
+					return;
+				}
+				obstacleSetXY (obstacle, obstacle->xCenter, round ([textField doubleValue]));
 				break;
 				
 				case 2:
-				obstacleSetRadius (obstacle, round ([textField floatValue]));
+				if (obstacle->radius == round ([textField doubleValue])) {
+					return;
+				}
+				obstacleSetRadius (obstacle, round ([textField doubleValue]));
 				break;
 				
 				case 3:
-				obstacleSetRotationDegrees (obstacle, [textField floatValue]);
+				if (obstacle->rotationDegrees == [textField doubleValue]) {
+					return;
+				}
+				obstacleSetRotationDegrees (obstacle, [textField doubleValue]);
 				break;
 				
 				case 4:
-				obstacleSetWidth (obstacle, round ([textField floatValue]));
+				if (obstacle->width == round ([textField doubleValue])) {
+					return;
+				}
+				obstacleSetWidth (obstacle, round ([textField doubleValue]));
 				break;
 				
 				case 5:
-				obstacleSetHeight (obstacle, round ([textField floatValue]));
+				if (obstacle->height == round ([textField doubleValue])) {
+					return;
+				}
+				obstacleSetHeight (obstacle, round ([textField doubleValue]));
 				break;
 				
 				case 6:
-				obstacle->opacity = [textField floatValue];
+				if (obstacle->opacity == [textField doubleValue]) {
+					return;
+				}
+				obstacle->opacity = [textField doubleValue];
 				break;
 				
 				default:
@@ -151,21 +172,33 @@ SDContext *shadowContext;
 			Lamp *lamp = sdContextLampAtIndex (shadowContext, (int) index);
 			switch (tag) {
 				case 0:
-				lamp->xLoc = [textField floatValue];
+				if (lamp->xLoc == round ([textField doubleValue])) {
+					return;
+				}
+				lamp->xLoc = round ([textField doubleValue]);
 				break;
 				
 				case 1:
-				lamp->yLoc = [textField floatValue];
+				if (lamp->yLoc == round ([textField doubleValue])) {
+					return;
+				}
+				lamp->yLoc = round ([textField doubleValue]);
 				break;
 				
 				case 2:
-				lamp->radius = round ([textField floatValue]);
+				if (lamp->radius == round ([textField doubleValue])) {
+					return;
+				}
+				lamp->radius = round ([textField doubleValue]);
 				break;
 				
 				case 3:
-				lamp->intensity = round ([textField floatValue]);
+				if (lamp->intensity == round ([textField doubleValue])) {
+					return;
+				}
+				lamp->intensity = round ([textField doubleValue]);
 				break;
-					
+				
 				default:
 				break;
 			}
@@ -208,7 +241,7 @@ SDContext *shadowContext;
 				[_obstacleCylinderXTextField setIntValue: obstacle->xCenter];
 				[_obstacleCylinderYTextField setIntValue: obstacle->yCenter];
 				[_obstacleCylinderRadiusTextField setIntValue: obstacle->radius];
-				[_obstacleCylinderOpacityTextField setFloatValue: obstacle->opacity];
+				[_obstacleCylinderOpacityTextField setDoubleValue: obstacle->opacity];
 				break;
 				
 				case ObstacleKindRectangularPrism:
@@ -217,8 +250,8 @@ SDContext *shadowContext;
 				[_obstacleRectangleYTextField setIntValue: obstacle->yCenter];
 				[_obstacleRectangleWidthTextField setIntValue: obstacle->width];
 				[_obstacleRectangleHeightTextField setIntValue: obstacle->height];
-				[_obstacleRectangleRotationTextField setFloatValue: obstacle->rotationDegrees];
-				[_obstacleRectangleOpacityTextField setFloatValue: obstacle->opacity];
+				[_obstacleRectangleRotationTextField setDoubleValue: obstacle->rotationDegrees];
+				[_obstacleRectangleOpacityTextField setDoubleValue: obstacle->opacity];
 				break;
 				
 				default:
@@ -910,6 +943,12 @@ SDContext *shadowContext;
 }
 
 - (void) applicationDidFinishLaunching: (NSNotification *) aNotification {
+	
+//	[_lampXTextField setNextKeyView: _lampYTextField];
+//	[_lampYTextField setNextKeyView: _lampRadiusTextField];
+//	[_lampRadiusTextField setNextKeyView: _lampIntensityTextField];
+//	[_lampIntensityTextField setNextKeyView: _lampXTextField];
+	
 	// Create bitmap context.
 	int bitmapWidth = 256; 	// 512;
 	int bitmapHeight = 512;	// 1024;
@@ -944,6 +983,27 @@ SDContext *shadowContext;
 - (IBAction) tempSlider2: (id) sender {
 	shadowContext->tempOffset = [sender intValue];
 	[self renderPlayfield];
+}
+
+- (IBAction) addLampAction: (id) sender {
+	if (shadowContext) {
+		sdContextAddLamp (shadowContext, lampCreate (512, 1024));
+		[_contextTableView reloadData];
+	}
+}
+
+- (IBAction) addCylindricalObstacleAction: (id) sender {
+	if (shadowContext) {
+		sdContextAddObstacle (shadowContext, obstacleCreateCylinder (512, 1024, 8));
+		[_contextTableView reloadData];
+	}
+}
+
+- (IBAction) addRectangularObstacleAction: (id) sender {
+	if (shadowContext) {
+		sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (512, 1024, 20, 20, 0));
+		[_contextTableView reloadData];
+	}
 }
 
 - (NSData *) getFullsizeBitmapData {
