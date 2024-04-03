@@ -49,6 +49,22 @@ Obstacle *obstacleCreateRotatedRectangularPrism (double x, double y, double widt
 /// Convenience initializer/allocater. Pass the center (x, y), and radius of the cylinder.
 Obstacle *obstacleCreateCylinder (double x, double y, double radius);
 
+/// Sets new 'x' and 'y' center for obstacle. This has the effect of offsetting all the vertices by delta 'x' and 'y' where the delta is the difference
+/// between the old 'x' and 'y' center and the new.
+Obstacle *obstacleSetXY (Obstacle *obstacle, double x, double y);
+
+/// Assigns new 'radius' to kind=ObstacleKindCylinder. This causes new vertices to be created.
+Obstacle *obstacleSetRadius (Obstacle *obstacle, double radius);
+
+/// Assigns new 'width' to kind=ObstacleKindRectangularPrism.
+Obstacle *obstacleSetWidth (Obstacle *obstacle, double width);
+
+/// Assigns new 'height' to kind=ObstacleKindRectangularPrism.
+Obstacle *obstacleSetHeight (Obstacle *obstacle, double height);
+
+/// Assigns new 'rotation' to kind=ObstacleKindRectangularPrism.
+Obstacle *obstacleSetRotationDegrees (Obstacle *obstacle, double rotation);
+
 /// Specify transparency 0.0 to 1.0 to allow light to pass through. Default is 1.0 (opaque), 0.0 special case causes shadow 'void'.
 Obstacle *obstacleSetOpacity (Obstacle *obstacle, double opacity);
 

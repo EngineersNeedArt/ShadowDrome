@@ -25,6 +25,9 @@
                 <outlet property="obstacleCylinderRadiusTextField" destination="442-VV-Rs4" id="ska-On-qx8"/>
                 <outlet property="obstacleCylinderXTextField" destination="YUi-kC-0wP" id="jx9-ud-T4c"/>
                 <outlet property="obstacleCylinderYTextField" destination="NR2-Mo-T9C" id="2Ym-JY-xgX"/>
+                <outlet property="obstaclePolygonVerticesTextField" destination="j73-1M-c8y" id="MvZ-7Q-rvE"/>
+                <outlet property="obstaclePolygonXTextField" destination="Dgq-1d-xLK" id="00p-MG-HBg"/>
+                <outlet property="obstaclePolygonYTextField" destination="0RL-jF-A3X" id="aVb-qA-J8s"/>
                 <outlet property="obstacleRectangleHeightTextField" destination="11e-H7-z7U" id="WeF-bG-bwH"/>
                 <outlet property="obstacleRectangleOpacityTextField" destination="NDS-6Z-6Dw" id="uEJ-DM-AQn"/>
                 <outlet property="obstacleRectangleRotationTextField" destination="Hit-Po-uAT" id="4dT-Db-Le2"/>
@@ -859,14 +862,56 @@
                                             </tabViewItem>
                                             <tabViewItem label="Item 1" identifier="" id="4Ds-Df-8lI" userLabel="Polygon">
                                                 <view key="view" id="B2U-HC-0XN">
-                                                    <rect key="frame" x="0.0" y="0.0" width="398" height="105"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="398" height="104"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
-                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xbr-a1-d1p">
-                                                            <rect key="frame" x="139" y="45" width="121" height="16"/>
+                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f8U-6n-j1j">
+                                                            <rect key="frame" x="12" y="70" width="60" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Polygonal Obstacle" id="LjG-tw-Iy2">
+                                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="X:" id="vCa-Nn-OOK">
+                                                                <font key="font" metaFont="system"/>
+                                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                        <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Dgq-1d-xLK">
+                                                            <rect key="frame" x="78" y="68" width="60" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="ULf-Z9-odb">
                                                                 <font key="font" usesAppearanceFont="YES"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                            <connections>
+                                                                <outlet property="delegate" destination="Voe-Tx-rLC" id="3Y3-gR-Auo"/>
+                                                            </connections>
+                                                        </textField>
+                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qbG-0m-uEh">
+                                                            <rect key="frame" x="12" y="41" width="60" height="16"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Y:" id="ZkW-gu-GJT">
+                                                                <font key="font" metaFont="system"/>
+                                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                        <textField verticalHuggingPriority="750" fixedFrame="YES" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="0RL-jF-A3X">
+                                                            <rect key="frame" x="78" y="39" width="60" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="XKq-DI-xOH">
+                                                                <font key="font" usesAppearanceFont="YES"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                            <connections>
+                                                                <outlet property="delegate" destination="Voe-Tx-rLC" id="njL-Qk-hWL"/>
+                                                            </connections>
+                                                        </textField>
+                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j73-1M-c8y">
+                                                            <rect key="frame" x="12" y="12" width="368" height="16"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Polygon" id="oEN-wh-MWZ">
+                                                                <font key="font" metaFont="system"/>
                                                                 <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>

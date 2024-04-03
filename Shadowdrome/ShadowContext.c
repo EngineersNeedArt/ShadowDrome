@@ -172,7 +172,8 @@ double _sdMapIntensity (SDContext *context, double distanceSquared, double inten
 
 double _sdLuminanceForLamp (SDContext *context, double x, double y, Lamp *lamp) {
 	double luminance = 0.0;
-	for (int i = 0; i <= lamp->radius + 1; i++) {
+	int sampleCount = round (lamp->radius);
+	for (int i = 0; i <= sampleCount + 1; i++) {
 		double filamentDistance = (i * 2) - lamp->radius;
 		double filamentIntensity = fabs (filamentDistance / lamp->radius) * lamp->intensity;
 		double xLoc, yLoc;
@@ -188,6 +189,11 @@ double _sdLuminanceForLamp (SDContext *context, double x, double y, Lamp *lamp) 
 			}
 		}
 	}
+	
+	if (1) {
+		luminance  = luminance / (double) sampleCount;
+	}
+	
 	return luminance;
 }
 

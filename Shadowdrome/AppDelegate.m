@@ -24,17 +24,21 @@
 @property (strong) IBOutlet NSTextField *lampRadiusTextField;
 @property (strong) IBOutlet NSTextField *lampIntensityTextField;
 
+@property (strong) IBOutlet NSTextField *obstaclePolygonXTextField;
+@property (strong) IBOutlet NSTextField *obstaclePolygonYTextField;
+@property (strong) IBOutlet NSTextField *obstaclePolygonVerticesTextField;
+
+@property (strong) IBOutlet NSTextField *obstacleCylinderXTextField;
+@property (strong) IBOutlet NSTextField *obstacleCylinderYTextField;
+@property (strong) IBOutlet NSTextField *obstacleCylinderRadiusTextField;
+@property (strong) IBOutlet NSTextField *obstacleCylinderOpacityTextField;
+
 @property (strong) IBOutlet NSTextField *obstacleRectangleXTextField;
 @property (strong) IBOutlet NSTextField *obstacleRectangleYTextField;
 @property (strong) IBOutlet NSTextField *obstacleRectangleWidthTextField;
 @property (strong) IBOutlet NSTextField *obstacleRectangleHeightTextField;
 @property (strong) IBOutlet NSTextField *obstacleRectangleRotationTextField;
 @property (strong) IBOutlet NSTextField *obstacleRectangleOpacityTextField;
-
-@property (strong) IBOutlet NSTextField *obstacleCylinderXTextField;
-@property (strong) IBOutlet NSTextField *obstacleCylinderYTextField;
-@property (strong) IBOutlet NSTextField *obstacleCylinderRadiusTextField;
-@property (strong) IBOutlet NSTextField *obstacleCylinderOpacityTextField;
 
 @property (strong) NSString *contextJSON;
 @end
@@ -68,23 +72,18 @@ SDContext *shadowContext;
 		Obstacle *obstacle = sdContextObstacleAtIndex (shadowContext, (int) index);
 		switch (obstacle->kind) {
 			case ObstacleKindPolygonalPrism:
-			cell.textField.stringValue = [NSString stringWithFormat: @"🔷 %ld", (long) index];
+			cell.textField.stringValue = [NSString stringWithFormat: @"🔷 %ld, (%ld, %ld)",
+					(long) index, (long) round (obstacle->xCenter), (long) round (obstacle->yCenter)];
 			break;
 			
 			case ObstacleKindCylinder:
-			cell.textField.stringValue = [NSString stringWithFormat: @"🔵 %ld, (x=%ld, y=%ld), r=%ld, o=%.2f",
-					(long) index, (long) round (obstacle->xCenter), (long) round (obstacle->yCenter),
-					(long) round (obstacle->radius), obstacle->opacity];
+			cell.textField.stringValue = [NSString stringWithFormat: @"🔵 %ld, (%ld, %ld)",
+					(long) index, (long) round (obstacle->xCenter), (long) round (obstacle->yCenter)];
 			break;
 			
-			case ObstacleKindRectangularPrism:
-			cell.textField.stringValue = [NSString stringWithFormat: @"🟦 %ld, (x=%ld, y=%ld), w=%ld, h=%ld, r=%ld, o=%.2f",
-					(long) index, (long) round (obstacle->xCenter), (long) round (obstacle->yCenter),
-					(long) round (obstacle->width), (long) round (obstacle->height),
-					(long) round (obstacle->rotationDegrees), obstacle->opacity];
-			break;
-			
-			default:
+			default:	// ObstacleKindRectangularPrism
+			cell.textField.stringValue = [NSString stringWithFormat: @"🟦 %ld, (%ld, %ld)",
+					(long) index, (long) round (obstacle->xCenter), (long) round (obstacle->yCenter)];
 			break;
 		}
 	} else {
@@ -102,6 +101,8 @@ SDContext *shadowContext;
 	}
 }
 
+#pragma mark - NSTextFieldDelegate
+
 - (void) controlTextDidEndEditing: (NSNotification *) obj {
 	if (shadowContext == NULL) {
 		return;
@@ -116,27 +117,27 @@ SDContext *shadowContext;
 			Obstacle *obstacle = sdContextObstacleAtIndex (shadowContext, (int) index);
 			switch (tag) {
 				case 0:
-				obstacle->xCenter = [textField floatValue];
+				obstacleSetXY (obstacle, [textField floatValue], obstacle->yCenter);
 				break;
 				
 				case 1:
-				obstacle->yCenter = [textField floatValue];
+				obstacleSetXY (obstacle, obstacle->xCenter, [textField floatValue]);
 				break;
 				
 				case 2:
-				obstacle->radius = round ([textField floatValue]);
+				obstacleSetRadius (obstacle, round ([textField floatValue]));
 				break;
 				
 				case 3:
-				obstacle->rotationDegrees = [textField floatValue];
+				obstacleSetRotationDegrees (obstacle, [textField floatValue]);
 				break;
 				
 				case 4:
-				obstacle->width = round ([textField floatValue]);
+				obstacleSetWidth (obstacle, round ([textField floatValue]));
 				break;
 				
 				case 5:
-				obstacle->height = round ([textField floatValue]);
+				obstacleSetHeight (obstacle, round ([textField floatValue]));
 				break;
 				
 				case 6:
@@ -197,6 +198,9 @@ SDContext *shadowContext;
 			switch (obstacle->kind) {
 				case ObstacleKindPolygonalPrism:
 				[_detailTabView selectTabViewItemAtIndex: 1];
+				[_obstaclePolygonXTextField setIntValue: obstacle->xCenter];
+				[_obstaclePolygonYTextField setIntValue: obstacle->yCenter];
+				[_obstaclePolygonVerticesTextField setIntValue: [NSString stringWithFormat:@"%ld vertices. Not currently editable.", obstacle->numVertices]];
 				break;
 				
 				case ObstacleKindCylinder:
@@ -233,6 +237,8 @@ SDContext *shadowContext;
 	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (380, 800, 400, 1200), 0.5));
 	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (330, 800, 350, 950));
 	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (330, 1050, 350, 1200), 0.5));
+	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (500, 1200, 200, 8, -60));
+	sdContextAddObstacle (shadowContext, obstacleCreateQuadPrism (800, 1200, 820, 1200, 820, 1220, 800, 1220));
 }
 
 - (void) test1 {
@@ -383,17 +389,16 @@ SDContext *shadowContext;
 	sdContextAddLamp (shadowContext, lampCreate (802, 1420));
 	
 	// Bumpers.
-	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (150, 493, 40));
-	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (718, 497, 40));
-	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (288, 647, 40));
-	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (578, 647, 40));
-	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (430, 798, 40));
-	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (290, 946, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (148, 496, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (290, 649, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (431, 798, 40));
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (576, 950, 40));
-	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (158, 1099, 40));
-//	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (150, 1099, 40));
-	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (720, 1101, 40));
-
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (720, 1102, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (146, 1102, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (290, 946, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (578, 647, 40));
+	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (719, 497, 40));
+	
 	// Lane walls.
 	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (304, 354.5, 123.4, 8, -62));
 	sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (561, 354.5, 123.4, 8, 62));
