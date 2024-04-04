@@ -12,6 +12,7 @@
 
 
 typedef struct {
+	int version;
 	char *name;
 	int width;
 	int height;

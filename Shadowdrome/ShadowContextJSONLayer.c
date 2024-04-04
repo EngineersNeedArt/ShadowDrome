@@ -230,7 +230,8 @@ SDContext *sdContextCreateFromJSONRepresentation (const char *json) {
 	}
 	
 	// Create shadow context.
-	context = sdContextCreate( title, width, height);
+	context = sdContextCreate (title, width, height);
+	context->version = version;
 	
 	// Parse lamps.
 	cJSON *lampsJSON = cJSON_GetObjectItemCaseSensitive (rootObject, "lamps");
