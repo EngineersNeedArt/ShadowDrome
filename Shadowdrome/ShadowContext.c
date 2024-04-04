@@ -13,6 +13,7 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
+
 #pragma mark - Private
 
 int _sdCCW (double x0, double y0, double x1, double y1, double x2, double y2) {
@@ -159,7 +160,7 @@ void _sdGetFilamentPointForLamp (Lamp *lamp, double relX, double relY, double di
 }
 
 double _sdMapIntensity (SDContext *context, double distanceSquared, double intensity) {
-	if (0) {
+	if (context->version == 0) {
     	return (intensity * (double) context->tempScalar) / (distanceSquared + 10000);
 	} else {
     	double distance = sqrt (distanceSquared) + (double) context->tempOffset;
@@ -190,7 +191,7 @@ double _sdLuminanceForLamp (SDContext *context, double x, double y, Lamp *lamp) 
 		}
 	}
 	
-	if (1) {
+	if (context->version > 0) {
 		luminance  = luminance / (double) sampleCount;
 	}
 	
@@ -225,6 +226,7 @@ double _sdContextGetLuminanceForPoint (SDContext *context, double x, double y) {
 
 SDContext *sdContextCreate (char *name, int width, int height) {
 	SDContext *context = malloc (sizeof (SDContext));
+	context->version = 1;
 	context->name = malloc (sizeof (char) * (strlen (name) + 1));
 	context->name[0] = '\0';
 	strcpy (context->name, name);
