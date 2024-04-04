@@ -268,6 +268,50 @@ int sdContextAddLamp (SDContext *context, Lamp *lamp) {
 	return context->lampCount;
 }
 
+int sdContextRemoveLampAtIndex (SDContext *context, int index) {
+	// Param check.
+	if ((context == NULL) || (index < 0) || (index >= context->lampCount)) {
+		return -1;
+	}
+	
+	Lamp *wasLampArray = context->lampArray;
+	context->lampArray = malloc (sizeof (Lamp) * (context->lampCount - 1));
+	
+	Lamp *srcLampPtr = wasLampArray;
+	Lamp *destLampPtr = context->lampArray;
+	for (int i = 0; i < context->lampCount; i++) {
+		if (i != index) {
+			*destLampPtr = *srcLampPtr;
+			destLampPtr++;
+		}
+		srcLampPtr++;
+	}
+	
+	context->lampCount = context->lampCount - 1;
+	
+	if (wasLampArray) {
+		free (wasLampArray);
+	}
+	
+	return context->lampCount;
+}
+
+int sdContextNumberOfLamps (SDContext *context) {
+	// Param check.
+	if (context == NULL) {
+		return 0;
+	}
+	return context->lampCount;
+}
+
+Lamp *sdContextLampAtIndex (SDContext *context, int index) {
+	// Param check.
+	if ((context == NULL) || (index < 0) || (index >= context->lampCount)) {
+		return NULL;
+	}
+	return &(context->lampArray[index]);
+}
+
 int sdContextAddObstacle (SDContext *context, Obstacle *obstacle) {
 	// Param check.
 	if (context == NULL) {
@@ -295,12 +339,32 @@ int sdContextAddObstacle (SDContext *context, Obstacle *obstacle) {
 	return context->obstacleCount;
 }
 
-int sdContextNumberOfLamps (SDContext *context) {
+int sdContextRemoveObstacleAtIndex (SDContext *context, int index) {
 	// Param check.
-	if (context == NULL) {
-		return 0;
+	if ((context == NULL) || (index < 0) || (index >= context->obstacleCount)) {
+		return -1;
 	}
-	return context->lampCount;
+	
+	Obstacle *wasObstacleArray = context->obstacleArray;
+	context->obstacleArray = malloc (sizeof (Obstacle) * (context->obstacleCount - 1));
+	
+	Obstacle *srcObstaclePtr = wasObstacleArray;
+	Obstacle *destObstaclePtr = context->obstacleArray;
+	for (int i = 0; i < context->obstacleCount; i++) {
+		if (i != index) {
+			*destObstaclePtr = *srcObstaclePtr;
+			destObstaclePtr++;
+		}
+		srcObstaclePtr++;
+	}
+	
+	context->obstacleCount = context->obstacleCount - 1;
+	
+	if (wasObstacleArray) {
+		free (wasObstacleArray);
+	}
+	
+	return context->obstacleCount;
 }
 
 int sdContextNumberOfObstacles (SDContext *context) {
@@ -309,14 +373,6 @@ int sdContextNumberOfObstacles (SDContext *context) {
 		return 0;
 	}
 	return context->obstacleCount;
-}
-
-Lamp *sdContextLampAtIndex (SDContext *context, int index) {
-	// Param check.
-	if ((context == NULL) || (index < 0) || (index >= context->lampCount)) {
-		return NULL;
-	}
-	return &(context->lampArray[index]);
 }
 
 Obstacle *sdContextObstacleAtIndex (SDContext *context, int index) {

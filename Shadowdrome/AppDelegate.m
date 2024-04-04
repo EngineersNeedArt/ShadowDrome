@@ -48,168 +48,7 @@
 BMContext *bitmap;
 SDContext *shadowContext;
 
-#pragma mark - NSTableViewDataSource
-
-- (NSInteger) numberOfRowsInTableView: (NSTableView *) tableView {
-	if (shadowContext == NULL) {
-		return 0;
-	}
-	
-	return sdContextNumberOfLamps (shadowContext) + sdContextNumberOfObstacles (shadowContext);
-}
-
-#pragma mark - NSTableViewDelegate
-
--(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-	if (shadowContext == NULL) {
-		return 0;
-	}
-	NSString *identifier = tableColumn.identifier;
-	NSTableCellView *cell = [tableView makeViewWithIdentifier: identifier owner: self];
-	int numLamps = sdContextNumberOfLamps (shadowContext);
-	if (row >= numLamps) {
-		NSInteger index = row - numLamps;
-		Obstacle *obstacle = sdContextObstacleAtIndex (shadowContext, (int) index);
-		switch (obstacle->kind) {
-			case ObstacleKindPolygonalPrism:
-			cell.textField.stringValue = [NSString stringWithFormat: @"🔷 %ld, (%ld, %ld)",
-					(long) index, (long) round (obstacle->xCenter), (long) round (obstacle->yCenter)];
-			break;
-			
-			case ObstacleKindCylinder:
-			cell.textField.stringValue = [NSString stringWithFormat: @"🔵 %ld, (%ld, %ld)",
-					(long) index, (long) round (obstacle->xCenter), (long) round (obstacle->yCenter)];
-			break;
-			
-			default:	// ObstacleKindRectangularPrism
-			cell.textField.stringValue = [NSString stringWithFormat: @"🟦 %ld, (%ld, %ld)",
-					(long) index, (long) round (obstacle->xCenter), (long) round (obstacle->yCenter)];
-			break;
-		}
-	} else {
-		Lamp *lamp = sdContextLampAtIndex (shadowContext, (int) row);
-		cell.textField.stringValue = [NSString stringWithFormat: @"💡 %ld, (%ld, %ld)",
-				(long) row, (long) round (lamp->xLoc), (long) round (lamp->yLoc)];
-	}
-	return cell;
-}
-
-- (void) tableViewSelectionDidChange :(NSNotification *) notification {
-	if ([notification object] == _contextTableView) {
-		NSInteger selectedRow = [_contextTableView selectedRow];
-		[self showDetailForObjectAtIndex: selectedRow];
-	}
-}
-
-#pragma mark - NSTextFieldDelegate
-
-- (void) controlTextDidEndEditing: (NSNotification *) obj {
-	if (shadowContext == NULL) {
-		return;
-	}
-	NSInteger row = [_contextTableView selectedRow];
-	if (row >= 0) {
-		NSTextField *textField = [obj object];
-		NSInteger tag = [textField tag];
-		NSInteger index = row;
-		if (index >= sdContextNumberOfLamps (shadowContext)) {
-			index -= sdContextNumberOfLamps (shadowContext);
-			Obstacle *obstacle = sdContextObstacleAtIndex (shadowContext, (int) index);
-			switch (tag) {
-				case 0:
-				if (obstacle->xCenter == round ([textField doubleValue])) {
-					return;
-				}
-				obstacleSetXY (obstacle, round ([textField doubleValue]), obstacle->yCenter);
-				break;
-				
-				case 1:
-				if (obstacle->yCenter == round ([textField doubleValue])) {
-					return;
-				}
-				obstacleSetXY (obstacle, obstacle->xCenter, round ([textField doubleValue]));
-				break;
-				
-				case 2:
-				if (obstacle->radius == round ([textField doubleValue])) {
-					return;
-				}
-				obstacleSetRadius (obstacle, round ([textField doubleValue]));
-				break;
-				
-				case 3:
-				if (obstacle->rotationDegrees == [textField doubleValue]) {
-					return;
-				}
-				obstacleSetRotationDegrees (obstacle, [textField doubleValue]);
-				break;
-				
-				case 4:
-				if (obstacle->width == round ([textField doubleValue])) {
-					return;
-				}
-				obstacleSetWidth (obstacle, round ([textField doubleValue]));
-				break;
-				
-				case 5:
-				if (obstacle->height == round ([textField doubleValue])) {
-					return;
-				}
-				obstacleSetHeight (obstacle, round ([textField doubleValue]));
-				break;
-				
-				case 6:
-				if (obstacle->opacity == [textField doubleValue]) {
-					return;
-				}
-				obstacle->opacity = [textField doubleValue];
-				break;
-				
-				default:
-				break;
-			}
-		} else {
-			Lamp *lamp = sdContextLampAtIndex (shadowContext, (int) index);
-			switch (tag) {
-				case 0:
-				if (lamp->xLoc == round ([textField doubleValue])) {
-					return;
-				}
-				lamp->xLoc = round ([textField doubleValue]);
-				break;
-				
-				case 1:
-				if (lamp->yLoc == round ([textField doubleValue])) {
-					return;
-				}
-				lamp->yLoc = round ([textField doubleValue]);
-				break;
-				
-				case 2:
-				if (lamp->radius == round ([textField doubleValue])) {
-					return;
-				}
-				lamp->radius = round ([textField doubleValue]);
-				break;
-				
-				case 3:
-				if (lamp->intensity == round ([textField doubleValue])) {
-					return;
-				}
-				lamp->intensity = round ([textField doubleValue]);
-				break;
-				
-				default:
-				break;
-			}
-		}
-		[_contextTableView reloadData];
-		[_contextTableView selectRow: row byExtendingSelection: NO];
-		[self renderPlayfield];
-	}
-}
-
-- (void) showDetailForObjectAtIndex: (NSInteger) index {
+- (void) _showDetailForObjectAtIndex: (NSInteger) index {
 	if ((shadowContext == NULL) || (index < 0) || (index >= (sdContextNumberOfLamps (shadowContext) + sdContextNumberOfObstacles (shadowContext)))) {
 		[_detailTabView selectTabViewItemAtIndex: 4];
 		return;
@@ -233,7 +72,7 @@ SDContext *shadowContext;
 				[_detailTabView selectTabViewItemAtIndex: 1];
 				[_obstaclePolygonXTextField setIntValue: obstacle->xCenter];
 				[_obstaclePolygonYTextField setIntValue: obstacle->yCenter];
-				[_obstaclePolygonVerticesTextField setIntValue: [NSString stringWithFormat:@"%ld vertices. Not currently editable.", obstacle->numVertices]];
+					[_obstaclePolygonVerticesTextField setStringValue: [NSString stringWithFormat: @"%d vertices. Not currently editable.", obstacle->numVertices]];
 				break;
 				
 				case ObstacleKindCylinder:
@@ -260,6 +99,63 @@ SDContext *shadowContext;
 		}
 	}
 }
+
+- (NSData *) _getFullsizeBitmapData {
+	NSData *bitmapData = NULL;
+	BMContext *fullBitmap;
+	
+	fullBitmap = bmContextCreate (1024, 2048);
+//	fullBitmap = bmContextCreate (2048, 4096);
+	bmContextFillBuffer (fullBitmap, 0, 0, 0, 255);
+	sdContextRenderToBitmap (shadowContext, fullBitmap);
+	
+	CGDataProviderRef provider = CGDataProviderCreateWithData (NULL, bmContextBufferPtr(fullBitmap), bmContextBufferSize(fullBitmap), NULL);
+	CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+	CGImageRef imageRef = CGImageCreate(bmContextWidth (fullBitmap), bmContextHeight (fullBitmap), 8, 32,
+			4 * bmContextWidth (fullBitmap), colorSpaceRef,
+			kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast, provider, NULL, YES,
+			kCGRenderingIntentDefault);
+	
+	NSImage *image = [[NSImage alloc] initWithCGImage: imageRef
+			size: NSMakeSize (bmContextWidth (fullBitmap), bmContextHeight (fullBitmap))];
+	
+	// No compression
+	NSData *data = [image TIFFRepresentation];
+	if (data != nil) {
+		NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc] initWithData: data];
+		if (bitmapRep != nil) {
+			bitmapData = [bitmapRep representationUsingType: NSBitmapImageFileTypePNG properties: @{}];
+		}
+	}
+	
+	CGImageRelease (imageRef);
+	CGColorSpaceRelease (colorSpaceRef);
+	CGDataProviderRelease (provider);
+	
+	return bitmapData;
+}
+
+- (void) _renderPlayfield {
+	bmContextFillBuffer (bitmap, 0, 0, 0, 255);
+	sdContextRenderToBitmap (shadowContext, bitmap);
+	
+	CGDataProviderRef provider = CGDataProviderCreateWithData (NULL, bmContextBufferPtr(bitmap), bmContextBufferSize(bitmap), NULL);
+	CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+	CGImageRef imageRef = CGImageCreate(bmContextWidth (bitmap), bmContextHeight (bitmap), 8, 32,
+			4 * bmContextWidth (bitmap), colorSpaceRef,
+			kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast, provider, NULL, YES,
+			kCGRenderingIntentDefault);
+	
+	NSImage *image = [[NSImage alloc] initWithCGImage: imageRef
+			size: NSMakeSize (bmContextWidth (bitmap), bmContextHeight (bitmap))];
+	self.shadowImageView.image = image;
+	
+	CGImageRelease (imageRef);
+	CGColorSpaceRelease (colorSpaceRef);
+	CGDataProviderRelease (provider);
+}
+
+#pragma mark - Sample contexts
 
 - (void) test0 {
 	shadowContext = sdContextCreate ("test", 1024, 2048);
@@ -922,33 +818,170 @@ SDContext *shadowContext;
 	sdContextAddLamp (shadowContext, lampSetIntensity (lampCreate (1200, 1900), 7.0));
 }
 
-- (void) renderPlayfield {
-	bmContextFillBuffer (bitmap, 0, 0, 0, 255);
-	sdContextRenderToBitmap (shadowContext, bitmap);
+#pragma mark - NSTableViewDataSource
+
+- (NSInteger) numberOfRowsInTableView: (NSTableView *) tableView {
+	if (shadowContext == NULL) {
+		return 0;
+	}
 	
-	CGDataProviderRef provider = CGDataProviderCreateWithData (NULL, bmContextBufferPtr(bitmap), bmContextBufferSize(bitmap), NULL);
-	CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
-	CGImageRef imageRef = CGImageCreate(bmContextWidth (bitmap), bmContextHeight (bitmap), 8, 32,
-			4 * bmContextWidth (bitmap), colorSpaceRef,
-			kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast, provider, NULL, YES,
-			kCGRenderingIntentDefault);
-	
-	NSImage *image = [[NSImage alloc] initWithCGImage: imageRef
-			size: NSMakeSize (bmContextWidth (bitmap), bmContextHeight (bitmap))];
-	self.shadowImageView.image = image;
-	
-	CGImageRelease (imageRef);
-	CGColorSpaceRelease (colorSpaceRef);
-	CGDataProviderRelease (provider);
+	return sdContextNumberOfLamps (shadowContext) + sdContextNumberOfObstacles (shadowContext);
 }
 
+#pragma mark - NSTableViewDelegate
+
+-(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+	if (shadowContext == NULL) {
+		return 0;
+	}
+	NSString *identifier = tableColumn.identifier;
+	NSTableCellView *cell = [tableView makeViewWithIdentifier: identifier owner: self];
+	int numLamps = sdContextNumberOfLamps (shadowContext);
+	if (row >= numLamps) {
+		NSInteger index = row - numLamps;
+		Obstacle *obstacle = sdContextObstacleAtIndex (shadowContext, (int) index);
+		switch (obstacle->kind) {
+			case ObstacleKindPolygonalPrism:
+			cell.textField.stringValue = [NSString stringWithFormat: @"🔷 %ld, (%ld, %ld)",
+					(long) index, (long) round (obstacle->xCenter), (long) round (obstacle->yCenter)];
+			break;
+			
+			case ObstacleKindCylinder:
+			cell.textField.stringValue = [NSString stringWithFormat: @"🔵 %ld, (%ld, %ld)",
+					(long) index, (long) round (obstacle->xCenter), (long) round (obstacle->yCenter)];
+			break;
+			
+			default:	// ObstacleKindRectangularPrism
+			cell.textField.stringValue = [NSString stringWithFormat: @"🟦 %ld, (%ld, %ld)",
+					(long) index, (long) round (obstacle->xCenter), (long) round (obstacle->yCenter)];
+			break;
+		}
+	} else {
+		Lamp *lamp = sdContextLampAtIndex (shadowContext, (int) row);
+		cell.textField.stringValue = [NSString stringWithFormat: @"💡 %ld, (%ld, %ld)",
+				(long) row, (long) round (lamp->xLoc), (long) round (lamp->yLoc)];
+	}
+	return cell;
+}
+
+- (void) tableViewSelectionDidChange :(NSNotification *) notification {
+	if ([notification object] == _contextTableView) {
+		NSInteger selectedRow = [_contextTableView selectedRow];
+		[self _showDetailForObjectAtIndex: selectedRow];
+	}
+}
+
+#pragma mark - NSTextFieldDelegate
+
+- (void) controlTextDidEndEditing: (NSNotification *) obj {
+	if (shadowContext == NULL) {
+		return;
+	}
+	NSInteger row = [_contextTableView selectedRow];
+	if (row >= 0) {
+		NSTextField *textField = [obj object];
+		NSInteger tag = [textField tag];
+		NSInteger index = row;
+		if (index >= sdContextNumberOfLamps (shadowContext)) {
+			index -= sdContextNumberOfLamps (shadowContext);
+			Obstacle *obstacle = sdContextObstacleAtIndex (shadowContext, (int) index);
+			switch (tag) {
+				case 0:
+				if (obstacle->xCenter == round ([textField doubleValue])) {
+					return;
+				}
+				obstacleSetXY (obstacle, round ([textField doubleValue]), obstacle->yCenter);
+				break;
+				
+				case 1:
+				if (obstacle->yCenter == round ([textField doubleValue])) {
+					return;
+				}
+				obstacleSetXY (obstacle, obstacle->xCenter, round ([textField doubleValue]));
+				break;
+				
+				case 2:
+				if (obstacle->radius == round ([textField doubleValue])) {
+					return;
+				}
+				obstacleSetRadius (obstacle, round ([textField doubleValue]));
+				break;
+				
+				case 3:
+				if (obstacle->rotationDegrees == [textField doubleValue]) {
+					return;
+				}
+				obstacleSetRotationDegrees (obstacle, [textField doubleValue]);
+				break;
+				
+				case 4:
+				if (obstacle->width == round ([textField doubleValue])) {
+					return;
+				}
+				obstacleSetWidth (obstacle, round ([textField doubleValue]));
+				break;
+				
+				case 5:
+				if (obstacle->height == round ([textField doubleValue])) {
+					return;
+				}
+				obstacleSetHeight (obstacle, round ([textField doubleValue]));
+				break;
+				
+				case 6:
+				if (obstacle->opacity == [textField doubleValue]) {
+					return;
+				}
+				obstacle->opacity = [textField doubleValue];
+				break;
+				
+				default:
+				break;
+			}
+		} else {
+			Lamp *lamp = sdContextLampAtIndex (shadowContext, (int) index);
+			switch (tag) {
+				case 0:
+				if (lamp->xLoc == round ([textField doubleValue])) {
+					return;
+				}
+				lamp->xLoc = round ([textField doubleValue]);
+				break;
+				
+				case 1:
+				if (lamp->yLoc == round ([textField doubleValue])) {
+					return;
+				}
+				lamp->yLoc = round ([textField doubleValue]);
+				break;
+				
+				case 2:
+				if (lamp->radius == round ([textField doubleValue])) {
+					return;
+				}
+				lamp->radius = round ([textField doubleValue]);
+				break;
+				
+				case 3:
+				if (lamp->intensity == round ([textField doubleValue])) {
+					return;
+				}
+				lamp->intensity = round ([textField doubleValue]);
+				break;
+				
+				default:
+				break;
+			}
+		}
+		[_contextTableView reloadData];
+		[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: row] byExtendingSelection: NO];
+		[self _renderPlayfield];
+	}
+}
+
+#pragma mark - App Delegate
+
 - (void) applicationDidFinishLaunching: (NSNotification *) aNotification {
-	
-//	[_lampXTextField setNextKeyView: _lampYTextField];
-//	[_lampYTextField setNextKeyView: _lampRadiusTextField];
-//	[_lampRadiusTextField setNextKeyView: _lampIntensityTextField];
-//	[_lampIntensityTextField setNextKeyView: _lampXTextField];
-	
 	// Create bitmap context.
 	int bitmapWidth = 256; 	// 512;
 	int bitmapHeight = 512;	// 1024;
@@ -964,7 +997,7 @@ SDContext *shadowContext;
 //	[self addBaseballLightsAndObstacles];
 	
 	[_contextTableView reloadData];
-	[self renderPlayfield];
+	[self _renderPlayfield];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
@@ -975,70 +1008,64 @@ SDContext *shadowContext;
 	return YES;
 }
 
+#pragma mark - Actions
+
 - (IBAction) tempSlider: (id) sender {
 	shadowContext->tempScalar = [sender intValue];
-	[self renderPlayfield];
+	[self _renderPlayfield];
 }
 
 - (IBAction) tempSlider2: (id) sender {
 	shadowContext->tempOffset = [sender intValue];
-	[self renderPlayfield];
+	[self _renderPlayfield];
 }
 
 - (IBAction) addLampAction: (id) sender {
 	if (shadowContext) {
-		sdContextAddLamp (shadowContext, lampCreate (512, 1024));
+		int lampCount = sdContextAddLamp (shadowContext, lampCreate (512, 1024));
 		[_contextTableView reloadData];
+		
+		if (lampCount > 0) {
+			[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: lampCount - 1] byExtendingSelection: NO];
+		}
 	}
 }
 
 - (IBAction) addCylindricalObstacleAction: (id) sender {
 	if (shadowContext) {
-		sdContextAddObstacle (shadowContext, obstacleCreateCylinder (512, 1024, 8));
+		int obstacleCount = sdContextAddObstacle (shadowContext, obstacleCreateCylinder (512, 1024, 8));
 		[_contextTableView reloadData];
+		
+		if (obstacleCount > 0) {
+			int lampCount = sdContextNumberOfLamps (shadowContext);
+			[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: obstacleCount + lampCount - 1] byExtendingSelection: NO];
+		}
 	}
 }
 
 - (IBAction) addRectangularObstacleAction: (id) sender {
 	if (shadowContext) {
-		sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (512, 1024, 20, 20, 0));
+		int obstacleCount = sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (512, 1024, 20, 20, 0));
 		[_contextTableView reloadData];
+		
+		if (obstacleCount > 0) {
+			int lampCount = sdContextNumberOfLamps (shadowContext);
+			[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: obstacleCount + lampCount - 1] byExtendingSelection: NO];
+		}
 	}
 }
 
-- (NSData *) getFullsizeBitmapData {
-	NSData *bitmapData = NULL;
-	BMContext *fullBitmap;
-	
-	fullBitmap = bmContextCreate (1024, 2048);
-//	fullBitmap = bmContextCreate (2048, 4096);
-	bmContextFillBuffer (fullBitmap, 0, 0, 0, 255);
-	sdContextRenderToBitmap (shadowContext, fullBitmap);
-	
-	CGDataProviderRef provider = CGDataProviderCreateWithData (NULL, bmContextBufferPtr(fullBitmap), bmContextBufferSize(fullBitmap), NULL);
-	CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
-	CGImageRef imageRef = CGImageCreate(bmContextWidth (fullBitmap), bmContextHeight (fullBitmap), 8, 32,
-			4 * bmContextWidth (fullBitmap), colorSpaceRef,
-			kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast, provider, NULL, YES,
-			kCGRenderingIntentDefault);
-	
-	NSImage *image = [[NSImage alloc] initWithCGImage: imageRef
-			size: NSMakeSize (bmContextWidth (fullBitmap), bmContextHeight (fullBitmap))];
-	
-	// No compression
-	NSData *data = [image TIFFRepresentation];
-	if (data != nil) {
-		NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc] initWithData: data];
-		if (bitmapRep != nil) {
-			bitmapData = [bitmapRep representationUsingType: NSBitmapImageFileTypePNG properties: @{}];
+- (IBAction) deleteLampObstacleAction: (id) sender {
+	NSInteger selectedRow = [_contextTableView selectedRow];
+	if ((shadowContext)  && (selectedRow >= 0)) {
+		int numberOfLamps = sdContextNumberOfLamps (shadowContext);
+		if (selectedRow < numberOfLamps) {
+			sdContextRemoveLampAtIndex (shadowContext, (int) selectedRow);
+		} else {
+			sdContextRemoveObstacleAtIndex (shadowContext, (int) selectedRow - numberOfLamps);
 		}
+		[_contextTableView reloadData];
 	}
-	
-	CGImageRelease (imageRef);
-	CGColorSpaceRelease (colorSpaceRef);
-	CGDataProviderRelease (provider);
-	
-	return bitmapData;
 }
 
 - (IBAction) openJSONRepresentation: (id) sender {
@@ -1055,7 +1082,7 @@ SDContext *shadowContext;
 						shadowContext = NULL;
 					}
 					shadowContext = sdContextCreateFromJSONRepresentation ([json cStringUsingEncoding: NSASCIIStringEncoding]);
-					[self renderPlayfield];
+					[self _renderPlayfield];
 				}
 			}
 		}
@@ -1081,7 +1108,7 @@ SDContext *shadowContext;
 	panel.nameFieldStringValue = [NSString stringWithFormat: @"%s_shadows.png", shadowContext->name];
 	[panel beginWithCompletionHandler: ^(NSModalResponse result) {
 		if (result == NSModalResponseOK) {
-			NSData *bitmapData = [self getFullsizeBitmapData];
+			NSData *bitmapData = [self _getFullsizeBitmapData];
 			if (bitmapData) {
 				[bitmapData writeToURL: [panel URL] atomically: YES];
 			}

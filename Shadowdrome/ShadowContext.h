@@ -30,18 +30,23 @@ SDContext *sdContextCreate (char *name, int width, int height);
 /// Returns count of lamps.
 int sdContextAddLamp (SDContext *context, Lamp *lamp);
 
+/// Remove lamp with index from context. Will return (-1) if error, otherwise returns new count of lamps.
+int sdContextRemoveLampAtIndex (SDContext *context, int index);
+
+int sdContextNumberOfLamps (SDContext *context);
+
+Lamp *sdContextLampAtIndex (SDContext *context, int index);
+
 /// Add obstacle to context. Caller should not free obstacle until after context is freed - context only has pointer to obstacle.
 /// Returns count of obstacles.
 int sdContextAddObstacle (SDContext *context, Obstacle *obstacle);
 
-int sdContextNumberOfLamps (SDContext *context);
+/// Remove obstacle with index from context. Will return (-1) if error, otherwise returns new count of obstacles.
+int sdContextRemoveObstacleAtIndex (SDContext *context, int index);
 
 int sdContextNumberOfObstacles (SDContext *context);
 
-Lamp *sdContextLampAtIndex (SDContext *context, int index);
-
 Obstacle *sdContextObstacleAtIndex (SDContext *context, int index);
-
 
 /// Renders pixel data to bitmap. If bitmap width and height do not match context width and height, context will apply scale to fit when rendering.
 /// Bitmap is an RGBA, 8-bit bitmap. RGB values of bitmap pixels remain unchanged by this operation, alpha component for each pixel though
