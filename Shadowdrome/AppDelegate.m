@@ -47,6 +47,12 @@
 
 BMContext *bitmap;
 SDContext *shadowContext;
+BOOL renderComplete = NO;
+NSInteger nextRenderX = 0;
+NSInteger nextRenderY = 0;
+NSInteger renderIdentifier = -1;
+NSMutableArray<dispatch_queue_t> *workerQueues;
+double renderScale = 1.0;
 
 - (void) _showDetailForObjectAtIndex: (NSInteger) index {
 	if ((shadowContext == NULL) || (index < 0) || (index >= (sdContextNumberOfLamps (shadowContext) + sdContextNumberOfObstacles (shadowContext)))) {
@@ -135,7 +141,57 @@ SDContext *shadowContext;
 	return bitmapData;
 }
 
-- (void) _renderPlayfield {
+- (void) _resetRenderQueue {
+	nextRenderX = 0;
+	nextRenderY = 0;
+	renderComplete = NO;
+	renderIdentifier = renderIdentifier + 1;
+}
+
+// Must be called from main thread.
+- (BOOL) _nextPixelLocationToRenderX: (NSInteger *) x Y: (NSInteger *) y {
+	if (renderComplete) {
+		return NO;
+	} else {
+		*x = nextRenderX;
+		*y = nextRenderY;
+		
+		// Increment x.
+		nextRenderX = nextRenderX + 1;
+		if (nextRenderX > shadowContext->width) {
+			// If we've reached the ned of a row, increment y, start x back at start of new row.
+			nextRenderX = 0;
+			nextRenderY = nextRenderY + 1;
+			if (nextRenderY > shadowContext->height) {
+				// If we have completed all rows, the render is complete.
+				nextRenderY = 0;
+				renderComplete = YES;
+			}
+		}
+	}
+	
+	return YES;
+}
+
+// Must be called from main thread.
+- (void) _displayRenderedBitmap {
+	CGDataProviderRef provider = CGDataProviderCreateWithData (NULL, bmContextBufferPtr(bitmap), bmContextBufferSize(bitmap), NULL);
+	CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+	CGImageRef imageRef = CGImageCreate(bmContextWidth (bitmap), bmContextHeight (bitmap), 8, 32,
+			4 * bmContextWidth (bitmap), colorSpaceRef,
+			kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast, provider, NULL, YES,
+			kCGRenderingIntentDefault);
+	
+	NSImage *image = [[NSImage alloc] initWithCGImage: imageRef
+			size: NSMakeSize (bmContextWidth (bitmap), bmContextHeight (bitmap))];
+	self.shadowImageView.image = image;
+	
+	CGImageRelease (imageRef);
+	CGColorSpaceRelease (colorSpaceRef);
+	CGDataProviderRelease (provider);
+}
+
+- (void) _renderPlayfield0 {
 	bmContextFillBuffer (bitmap, 0, 0, 0, 255);
 	sdContextRenderToBitmap (shadowContext, bitmap);
 	
@@ -153,6 +209,97 @@ SDContext *shadowContext;
 	CGImageRelease (imageRef);
 	CGColorSpaceRelease (colorSpaceRef);
 	CGDataProviderRelease (provider);
+}
+
+- (void) _renderPlayfield1 {
+	// Reset render queue, clear bitmap.
+	[self _resetRenderQueue];
+	bmContextFillBuffer (bitmap, 0, 0, 0, 255);
+	
+	dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+		int width = bmContextWidth (bitmap);
+		int height = bmContextHeight (bitmap);
+		renderScale = 1.0;
+		if ((width != shadowContext->width) || (height != shadowContext->height)) {
+			renderScale = MAX ((double) width / shadowContext->width, (double) height / shadowContext->height);
+		}
+		
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				double scaledX = (double) x / renderScale;
+				double scaledY = (double) y / renderScale;
+				double luminance = sdContextGetLuminanceForPoint (shadowContext, scaledX, scaledY);
+				luminance = luminance * 255.0;
+				luminance = MIN (luminance, 255.0);
+				luminance = MAX (luminance, 0.0);
+				
+				unsigned char red, green, blue, alpha;
+				bmContextGetPixel (bitmap, x, y, &red, &green, &blue, &alpha);
+				if (alpha > round (luminance)) {
+					alpha = alpha - round (luminance);
+				} else {
+					alpha = 0;
+				}
+				bmContextSetPixel (bitmap, x, y, red, green, blue, alpha);
+			}
+		}
+		
+		dispatch_async (dispatch_get_main_queue (), ^(void) {
+			[self _displayRenderedBitmap];
+		});
+	});
+}
+
+- (void) _renderPlayfield {
+	// Reset render queue, clear bitmap.
+	[self _resetRenderQueue];
+	bmContextFillBuffer (bitmap, 0, 0, 0, 255);
+	
+	// Compute scale.
+	int width = bmContextWidth (bitmap);
+	int height = bmContextHeight (bitmap);
+	renderScale = 1.0;
+	if ((width != shadowContext->width) || (height != shadowContext->height)) {
+		renderScale = MAX ((double) width / shadowContext->width, (double) height / shadowContext->height);
+	}
+	
+	dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+		// Create a dispatch group to keep track of completion
+		dispatch_group_t group = dispatch_group_create ();
+		
+		// Iterate through each pixel in the bitmap and dispatch tasks to the worker queues.
+		NSInteger identifier = renderIdentifier;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				dispatch_group_async (group, [workerQueues objectAtIndex: x % 8], ^{
+					if (identifier == renderIdentifier) {
+						double scaledX = (double) x / renderScale;
+						double scaledY = (double) y / renderScale;
+						double luminance = sdContextGetLuminanceForPoint (shadowContext, scaledX, scaledY);
+						luminance = luminance * 255.0;
+						luminance = MIN (luminance, 255.0);
+						luminance = MAX (luminance, 0.0);
+						
+						unsigned char red, green, blue, alpha;
+						bmContextGetPixel (bitmap, x, y, &red, &green, &blue, &alpha);
+						if (alpha > round (luminance)) {
+							alpha = alpha - round (luminance);
+						} else {
+							alpha = 0;
+						}
+						bmContextSetPixel (bitmap, x, y, red, green, blue, alpha);
+					}
+				});
+			}
+		}
+		
+		// Wait for all tasks to complete
+		dispatch_group_wait (group, DISPATCH_TIME_FOREVER);
+		
+		dispatch_async (dispatch_get_main_queue (), ^(void) {
+			[self _displayRenderedBitmap];
+		});
+	});
 }
 
 #pragma mark - Sample contexts
@@ -183,6 +330,41 @@ SDContext *shadowContext;
 	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (380, 800, 400, 1200), 0.5));
 	sdContextAddObstacle (shadowContext, obstacleCreateRectangluarPrism (330, 800, 350, 950));
 	sdContextAddObstacle (shadowContext, obstacleSetOpacity (obstacleCreateRectangluarPrism (330, 1050, 350, 1200), 0.5));
+}
+
+- (void) test2 {
+	shadowContext = sdContextCreate ("test", 1024, 2048);
+	shadowContext->tempScalar = 3000;
+	
+	int gap = 256;
+	int divisionsX = 1024 / gap;
+	int obstacleCountX = divisionsX / 2;
+	int lampCountX = obstacleCountX - 1;
+	int divisionsY = 2048 / gap;
+	int obstacleCountY = divisionsY / 2;
+	int lampCountY = obstacleCountY - 1;
+	
+	// Create lamps.
+	double rowOffset = (1024 - ((lampCountX - 1) * 2 * gap)) / 2.0;
+	double colOffset = (2048 - ((lampCountY - 1) * 2 * gap)) / 2.0;
+	for (int yIndex = 0; yIndex < lampCountY; yIndex++) {
+		for (int xIndex = 0; xIndex < lampCountX; xIndex++) {
+			double x = rowOffset + (xIndex * gap * 2);
+			double y = colOffset + (yIndex * gap * 2);
+			sdContextAddLamp (shadowContext, lampCreate (x, y));
+		}
+	}
+	
+	// Create obstacles.
+	rowOffset = (1024 - ((obstacleCountX - 1) * 2 * gap)) / 2.0;
+	colOffset = (2048 - ((obstacleCountY - 1) * 2 * gap)) / 2.0;
+	for (int yIndex = 0; yIndex < obstacleCountY; yIndex++) {
+		for (int xIndex = 0; xIndex < obstacleCountX; xIndex++) {
+			double x = rowOffset + (xIndex * gap * 2);
+			double y = colOffset + (yIndex * gap * 2);
+			sdContextAddObstacle (shadowContext, obstacleCreateCylinder (x, y, 8));
+		}
+	}
 }
 
 - (void) addBlueNoteLightsAndObstacles {
@@ -637,16 +819,24 @@ SDContext *shadowContext;
 #pragma mark - App Delegate
 
 - (void) applicationDidFinishLaunching: (NSNotification *) aNotification {
+	// Create array of eight background queues.
+	workerQueues = [NSMutableArray arrayWithCapacity: 8];
+	for (int i = 0; i < 8; i++) {
+		dispatch_queue_t queue = dispatch_queue_create ([[NSString stringWithFormat: @"com.shadowdrome.queue%d", i + 1] UTF8String], DISPATCH_QUEUE_PRIORITY_DEFAULT);
+		[workerQueues addObject: queue];
+	}
+	
 	// Create bitmap context.
-	int bitmapWidth = 256; 	// 512;
-	int bitmapHeight = 512;	// 1024;
+	int bitmapWidth = 128; 	// 512, 256;
+	int bitmapHeight = 256;	// 1024, 512;
 	bitmap = bmContextCreate (bitmapWidth, bitmapHeight);
 	
 //	[self test0];
 //	[self test1];
+//	[self test2];
 //	[self addBlueNoteLightsAndObstacles];
 //	[self addGigiLightsAndObstacles];
-//	[self addBaseballLightsAndObstacles];
+	[self addBaseballLightsAndObstacles];
 	
 	[_contextTableView reloadData];
 	[self _renderPlayfield];

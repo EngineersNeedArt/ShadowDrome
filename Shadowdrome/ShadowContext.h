@@ -49,6 +49,8 @@ int sdContextNumberOfObstacles (SDContext *context);
 
 Obstacle *sdContextObstacleAtIndex (SDContext *context, int index);
 
+double sdContextGetLuminanceForPoint (SDContext *context, double x, double y);
+
 /// Renders pixel data to bitmap. If bitmap width and height do not match context width and height, context will apply scale to fit when rendering.
 /// Bitmap is an RGBA, 8-bit bitmap. RGB values of bitmap pixels remain unchanged by this operation, alpha component for each pixel though
 /// will represent the luminosity at each point.

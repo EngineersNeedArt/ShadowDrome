@@ -198,30 +198,6 @@ double _sdLuminanceForLamp (SDContext *context, double x, double y, Lamp *lamp) 
 	return luminance;
 }
 
-double _sdContextGetLuminanceForPoint (SDContext *context, double x, double y) {
-	double luminance = 0.0;
-	
-	Obstacle *obstaclePtr = context->obstacleArray;
-	for (int o = 0; o < context->obstacleCount; o++) {
-		if (_sdPointInObstacle (x, y, obstaclePtr)) {
-			if (obstaclePtr->opacity == 0.0) {
-				return 1.0;
-			}
-			return 0.0;
-//			return obstaclePtr->opacity;
-		}
-		obstaclePtr++;
-	}
-	
-	Lamp *lampPtr = context->lampArray;
-	for (int l = 0; l < context->lampCount; l++) {
-		luminance += _sdLuminanceForLamp (context, x, y, lampPtr);
-//		luminance = (luminance + _sdLuminanceForLamp (context, x, y, lampPtr)) / 2.0;
-		lampPtr++;
-	}
-	return luminance;
-}
-
 #pragma mark - Public
 
 SDContext *sdContextCreate (char *name, int width, int height) {
@@ -385,6 +361,35 @@ Obstacle *sdContextObstacleAtIndex (SDContext *context, int index) {
 	return &(context->obstacleArray[index]);
 }
 
+double sdContextGetLuminanceForPoint (SDContext *context, double x, double y) {
+	// Param check.
+	if ((x < 0.0) || (y < 0.0) || (x > context->width) || (y > context->height)) {
+		return 0.0;
+	}
+	
+	double luminance = 0.0;
+	
+	Obstacle *obstaclePtr = context->obstacleArray;
+	for (int o = 0; o < context->obstacleCount; o++) {
+		if (_sdPointInObstacle (x, y, obstaclePtr)) {
+			if (obstaclePtr->opacity == 0.0) {
+				return 1.0;
+			}
+			return 0.0;
+//			return obstaclePtr->opacity;
+		}
+		obstaclePtr++;
+	}
+	
+	Lamp *lampPtr = context->lampArray;
+	for (int l = 0; l < context->lampCount; l++) {
+		luminance += _sdLuminanceForLamp (context, x, y, lampPtr);
+//		luminance = (luminance + _sdLuminanceForLamp (context, x, y, lampPtr)) / 2.0;
+		lampPtr++;
+	}
+	return luminance;
+}
+
 int sdContextRenderToBitmap (SDContext *context, BMContext *bitmap) {
 	// Param check.
 	if (context == NULL) {
@@ -402,7 +407,7 @@ int sdContextRenderToBitmap (SDContext *context, BMContext *bitmap) {
 		for (int x = 0; x < width; x++) {
 			double scaledX = (double) x / scale;
 			double scaledY = (double) y / scale;
-			double luminance = _sdContextGetLuminanceForPoint (context, scaledX, scaledY);
+			double luminance = sdContextGetLuminanceForPoint (context, scaledX, scaledY);
 	    	luminance = luminance * 255.0;
 	    	luminance = MIN (luminance, 255.0);
 	    	luminance = MAX (luminance, 0.0);
