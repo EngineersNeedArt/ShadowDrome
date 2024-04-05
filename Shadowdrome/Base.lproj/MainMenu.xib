@@ -91,12 +91,12 @@
                         <items>
                             <menuItem title="New" keyEquivalent="n" id="Was-JA-tGl">
                                 <connections>
-                                    <action selector="newDocument:" target="-1" id="4Si-XN-c54"/>
+                                    <action selector="newContext:" target="Voe-Tx-rLC" id="q3b-kZ-49h"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9">
                                 <connections>
-                                    <action selector="openDocument:" target="-1" id="bVn-NM-KNZ"/>
+                                    <action selector="openJSONRepresentation:" target="Voe-Tx-rLC" id="DLD-Ht-b5x"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Open Recent" id="tXI-mr-wws">
@@ -337,7 +337,7 @@ CA
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                         <font key="font" metaFont="system"/>
                                         <tabViewItems>
-                                            <tabViewItem label="View" identifier="" id="a7t-0U-i37" userLabel="Lamp">
+                                            <tabViewItem label="LampDetail" identifier="" id="a7t-0U-i37" userLabel="Lamp">
                                                 <view key="view" id="5XQ-Cr-dcv">
                                                     <rect key="frame" x="0.0" y="0.0" width="398" height="104"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -431,15 +431,19 @@ CA
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="tbT-WA-cTx"/>
                                                                 <outlet property="formatter" destination="AYR-Rj-5Ch" id="eBj-nC-r3W"/>
+                                                                <outlet property="nextKeyView" destination="rUP-an-aav" id="feS-k2-cWY"/>
                                                             </connections>
                                                         </textField>
                                                     </subviews>
+                                                    <connections>
+                                                        <outlet property="nextKeyView" destination="rUP-an-aav" id="k7S-XB-U9r"/>
+                                                    </connections>
                                                 </view>
                                                 <connections>
                                                     <outlet property="initialFirstResponder" destination="rUP-an-aav" id="iao-Lh-28U"/>
                                                 </connections>
                                             </tabViewItem>
-                                            <tabViewItem label="Item 1" identifier="" id="4Ds-Df-8lI" userLabel="Polygon">
+                                            <tabViewItem label="PolygonDetail" identifier="" id="4Ds-Df-8lI" userLabel="Polygon">
                                                 <view key="view" id="B2U-HC-0XN">
                                                     <rect key="frame" x="0.0" y="0.0" width="398" height="104"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -504,7 +508,7 @@ CA
                                                     <outlet property="initialFirstResponder" destination="Dgq-1d-xLK" id="bXx-gJ-9gp"/>
                                                 </connections>
                                             </tabViewItem>
-                                            <tabViewItem label="Item 2" identifier="" id="5g8-mM-WwK" userLabel="Cylinder">
+                                            <tabViewItem label="CylinderDetail" identifier="" id="5g8-mM-WwK" userLabel="Cylinder">
                                                 <view key="view" id="kxk-Q7-0Aq">
                                                     <rect key="frame" x="0.0" y="0.0" width="398" height="104"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -606,7 +610,7 @@ CA
                                                     <outlet property="initialFirstResponder" destination="YUi-kC-0wP" id="DSV-zX-hUT"/>
                                                 </connections>
                                             </tabViewItem>
-                                            <tabViewItem label="Item 3" identifier="" id="vLl-03-Xk8" userLabel="Rectangle">
+                                            <tabViewItem label="RectangleDetail" identifier="" id="vLl-03-Xk8" userLabel="Rectangle">
                                                 <view key="view" id="0ue-xf-q16">
                                                     <rect key="frame" x="0.0" y="0.0" width="398" height="104"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -757,7 +761,7 @@ CA
                                                     <outlet property="initialFirstResponder" destination="MPD-xq-ypY" id="t21-hT-dW2"/>
                                                 </connections>
                                             </tabViewItem>
-                                            <tabViewItem label="Item 4" identifier="" id="4se-nG-vSd" userLabel="Nothing">
+                                            <tabViewItem label="NoDetail" identifier="" id="4se-nG-vSd" userLabel="Nothing">
                                                 <view key="view" id="qFK-4q-spI">
                                                     <rect key="frame" x="0.0" y="0.0" width="398" height="104"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -902,6 +906,9 @@ CA
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="newContext:" target="Voe-Tx-rLC" id="o8u-9u-KOI"/>
+                        </connections>
                     </button>
                     <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jW9-Ta-LWu">
                         <rect key="frame" x="240" y="46" width="204" height="28"/>

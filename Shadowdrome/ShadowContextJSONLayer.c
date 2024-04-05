@@ -291,7 +291,7 @@ SDContext *sdContextCreateFromJSONRepresentation (const char *json) {
 			
 			if (obstacle) {
 				double opacity = cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (oneObstacleJSON, "opacity"));
-				if (isnan (opacity)) {
+				if (!isnan (opacity)) {
 					obstacleSetOpacity (obstacle, opacity);
 				}
 				sdContextAddObstacle (context, obstacle);
