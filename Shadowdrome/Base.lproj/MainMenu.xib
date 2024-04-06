@@ -491,6 +491,7 @@ CA
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="njL-Qk-hWL"/>
                                                                 <outlet property="formatter" destination="AYR-Rj-5Ch" id="rP8-9i-0lW"/>
+                                                                <outlet property="nextKeyView" destination="Dgq-1d-xLK" id="l6K-UO-amw"/>
                                                             </connections>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j73-1M-c8y">
@@ -503,6 +504,9 @@ CA
                                                             </textFieldCell>
                                                         </textField>
                                                     </subviews>
+                                                    <connections>
+                                                        <outlet property="nextKeyView" destination="Dgq-1d-xLK" id="qsi-Ri-cPN"/>
+                                                    </connections>
                                                 </view>
                                                 <connections>
                                                     <outlet property="initialFirstResponder" destination="Dgq-1d-xLK" id="bXx-gJ-9gp"/>
@@ -602,9 +606,13 @@ CA
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="ccw-Tb-ziM"/>
                                                                 <outlet property="formatter" destination="AYR-Rj-5Ch" id="XX1-d1-kwL"/>
+                                                                <outlet property="nextKeyView" destination="YUi-kC-0wP" id="O5x-OZ-7pm"/>
                                                             </connections>
                                                         </textField>
                                                     </subviews>
+                                                    <connections>
+                                                        <outlet property="nextKeyView" destination="YUi-kC-0wP" id="fnc-fh-46Q"/>
+                                                    </connections>
                                                 </view>
                                                 <connections>
                                                     <outlet property="initialFirstResponder" destination="YUi-kC-0wP" id="DSV-zX-hUT"/>
@@ -753,9 +761,13 @@ CA
                                                             <connections>
                                                                 <outlet property="delegate" destination="Voe-Tx-rLC" id="IhO-V2-Hp4"/>
                                                                 <outlet property="formatter" destination="AYR-Rj-5Ch" id="paf-f8-L9H"/>
+                                                                <outlet property="nextKeyView" destination="MPD-xq-ypY" id="2ua-TS-w8R"/>
                                                             </connections>
                                                         </textField>
                                                     </subviews>
+                                                    <connections>
+                                                        <outlet property="nextKeyView" destination="MPD-xq-ypY" id="qbW-Wr-iDr"/>
+                                                    </connections>
                                                 </view>
                                                 <connections>
                                                     <outlet property="initialFirstResponder" destination="MPD-xq-ypY" id="t21-hT-dW2"/>

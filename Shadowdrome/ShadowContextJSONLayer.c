@@ -169,7 +169,7 @@ char *sdContextJSONRepresentation (SDContext *context) {
 	cJSON *obstacles = NULL;
 	
 	// Add top-level fields.
-	if (cJSON_AddNumberToObject (jsonContext, "version", 0) == NULL) {
+	if (cJSON_AddNumberToObject (jsonContext, "version", context->version) == NULL) {
 		goto bail;
 	}
 	if (cJSON_AddStringToObject (jsonContext, "title", context->name) == NULL) {
@@ -213,7 +213,8 @@ bail:
 
 SDContext *sdContextCreateFromJSONRepresentation (const char *json) {
 	SDContext *context = NULL;
-	cJSON *rootObject = cJSON_Parse (json);
+	cJSON *rootObject = NULL;
+	rootObject = cJSON_Parse (json);
 	if (rootObject == NULL) {
 		goto bail;
 	}
@@ -225,7 +226,7 @@ SDContext *sdContextCreateFromJSONRepresentation (const char *json) {
 	int height = round (cJSON_GetNumberValue (cJSON_GetObjectItemCaseSensitive (rootObject, "height")));
 	
 	// Sanity check.
-	if ((version != 0) || (title == NULL) || (width <= 0) || (height <= 0)) {
+	if (((version < 0) || (version > 1)) || (title == NULL) || (width <= 0) || (height <= 0)) {
 		goto bail;
 	}
 	
@@ -300,6 +301,10 @@ SDContext *sdContextCreateFromJSONRepresentation (const char *json) {
 	}
 	
 bail:
+	
+	if (rootObject) {
+		cJSON_Delete (rootObject);
+	}
 	
 	return context;
 }

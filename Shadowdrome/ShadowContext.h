@@ -27,7 +27,7 @@ typedef struct {
 /// Create a context with specified width and height.
 SDContext *sdContextCreate (char *name, int width, int height);
 
-/// Add lamp to context. Caller should not free lamp until after context is freed - context only has pointer to lamp.
+/// Add lamp to context. Caller should not free lamp - context has pointer to lamp, will free when context is freed.
 /// Returns count of lamps.
 int sdContextAddLamp (SDContext *context, Lamp *lamp);
 
@@ -38,7 +38,7 @@ int sdContextNumberOfLamps (SDContext *context);
 
 Lamp *sdContextLampAtIndex (SDContext *context, int index);
 
-/// Add obstacle to context. Caller should not free obstacle until after context is freed - context only has pointer to obstacle.
+/// Add obstacle to context. Caller should not free obstacle - context has pointer to obstacle, will free when context is freed.
 /// Returns count of obstacles.
 int sdContextAddObstacle (SDContext *context, Obstacle *obstacle);
 

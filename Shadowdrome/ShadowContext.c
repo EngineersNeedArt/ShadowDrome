@@ -192,7 +192,7 @@ double _sdLuminanceForLamp (SDContext *context, double x, double y, Lamp *lamp) 
 	}
 	
 	if (context->version > 0) {
-		luminance  = luminance / (double) sampleCount;
+		luminance = luminance / (double) sampleCount;
 	}
 	
 	return luminance;

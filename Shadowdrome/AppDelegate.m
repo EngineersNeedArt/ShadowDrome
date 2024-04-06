@@ -13,6 +13,8 @@
 #include "ShadowContextJSONLayer.h"
 
 
+#define kNum_Queues	8
+
 @interface AppDelegate ()
 @property (strong) IBOutlet NSWindow *window;
 @property (strong) IBOutlet NSImageView *shadowImageView;
@@ -47,14 +49,15 @@
 
 BMContext *bitmap;
 SDContext *shadowContext;
-BOOL newLampAdded = NO;
+BOOL newObjectAdded = NO;
 NSInteger wasSelectedRow = -1;
-BOOL renderComplete = NO;
+BOOL renderComplete = YES;
 NSInteger nextRenderX = 0;
 NSInteger nextRenderY = 0;
 NSInteger renderIdentifier = -1;
 NSMutableArray<dispatch_queue_t> *workerQueues;
 double renderScale = 1.0;
+NSMutableArray<NSString *> *objectQueue;
 
 - (NSTextField *) _findOwningTextFieldFromTextView: (NSTextView *)textView {
 	NSView *view = textView;
@@ -400,8 +403,14 @@ double renderScale = 1.0;
 		// Iterate through each pixel in the bitmap and dispatch tasks to the worker queues.
 		NSInteger identifier = renderIdentifier;
 		for (int y = 0; y < height; y++) {
+			if (identifier != renderIdentifier) {
+				break;
+			}
 			for (int x = 0; x < width; x++) {
-				dispatch_group_async (group, [workerQueues objectAtIndex: x % 8], ^{
+				if (identifier != renderIdentifier) {
+					break;
+				}
+				dispatch_group_async (group, [workerQueues objectAtIndex: x % kNum_Queues], ^{
 					if (identifier == renderIdentifier) {
 						double scaledX = (double) x / renderScale;
 						double scaledY = (double) y / renderScale;
@@ -427,9 +436,57 @@ double renderScale = 1.0;
 		dispatch_group_wait (group, DISPATCH_TIME_FOREVER);
 		
 		dispatch_async (dispatch_get_main_queue (), ^(void) {
-			[self _displayRenderedBitmap];
+			if (identifier == renderIdentifier) {
+				renderComplete = YES;
+				[self _dequeObjects];
+				[self _displayRenderedBitmap];
+			}
 		});
 	});
+}
+
+- (void) _addObjectToContext: (NSString *) kind {
+	newObjectAdded = YES;
+	if ([kind isEqualToString: @"lamp"]) {
+		int lampCount = sdContextAddLamp (shadowContext, lampCreate (512, 1024));
+		[[self contextTableView] reloadData];
+		if (lampCount > 0) {
+			[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: lampCount - 1] byExtendingSelection: NO];
+		}
+	} else if ([kind isEqualToString: @"cylinder"]) {
+		int obstacleCount = sdContextAddObstacle (shadowContext, obstacleCreateCylinder (512, 1024, 8));
+		[[self contextTableView] reloadData];
+		if (obstacleCount > 0) {
+			int lampCount = sdContextNumberOfLamps (shadowContext);
+			[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: obstacleCount + lampCount - 1] byExtendingSelection: NO];
+		}
+	} else if ([kind isEqualToString: @"rectangle"]) {
+		int obstacleCount = sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (512, 1024, 20, 20, 0));
+		[[self contextTableView] reloadData];
+		
+		if (obstacleCount > 0) {
+			int lampCount = sdContextNumberOfLamps (shadowContext);
+			[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: obstacleCount + lampCount - 1] byExtendingSelection: NO];
+		}
+	}
+}
+
+- (void) _dequeObjects {
+	for (NSString *kind in objectQueue) {
+		[self _addObjectToContext: kind];
+	}
+	[objectQueue removeAllObjects];
+}
+
+- (void) _enqueAddObject: (NSString *) kind {
+	if (renderComplete) {
+		[self _addObjectToContext: kind];
+	} else {
+		if (objectQueue == NULL) {
+			objectQueue = [NSMutableArray array];
+		}
+		[objectQueue addObject: kind];
+	}
 }
 
 #pragma mark - Sample contexts
@@ -837,12 +894,12 @@ double renderScale = 1.0;
 		[self _capture];
 		[self _showDetailForObjectAtIndex: selectedRow];
 		wasSelectedRow = selectedRow;
-		if (newLampAdded) {
+		if (newObjectAdded) {
 			NSTabViewItem *currentTabViewItem = [_detailTabView selectedTabViewItem];
 			NSView *currentTabViewItemView = currentTabViewItem.view;
 			NSView *firstKeyView = [currentTabViewItemView nextKeyView];
 			[firstKeyView becomeFirstResponder];
-			newLampAdded = NO;
+			newObjectAdded = NO;
 		}
 	}
 }
@@ -866,8 +923,8 @@ double renderScale = 1.0;
 
 - (void) applicationDidFinishLaunching: (NSNotification *) aNotification {
 	// Create array of eight background queues.
-	workerQueues = [NSMutableArray arrayWithCapacity: 8];
-	for (int i = 0; i < 8; i++) {
+	workerQueues = [NSMutableArray arrayWithCapacity: kNum_Queues];
+	for (int i = 0; i < kNum_Queues; i++) {
 		dispatch_queue_t queue = dispatch_queue_create ([[NSString stringWithFormat: @"com.shadowdrome.queue%d", i + 1] UTF8String], DISPATCH_QUEUE_PRIORITY_DEFAULT);
 		[workerQueues addObject: queue];
 	}
@@ -922,36 +979,19 @@ double renderScale = 1.0;
 
 - (IBAction) addLampAction: (id) sender {
 	if (shadowContext) {
-		newLampAdded = YES;
-		int lampCount = sdContextAddLamp (shadowContext, lampCreate (512, 1024));
-		[[self contextTableView] reloadData];
-		if (lampCount > 0) {
-			[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: lampCount - 1] byExtendingSelection: NO];
-		}
+		[self _enqueAddObject: @"lamp"];
 	}
 }
 
 - (IBAction) addCylindricalObstacleAction: (id) sender {
 	if (shadowContext) {
-		int obstacleCount = sdContextAddObstacle (shadowContext, obstacleCreateCylinder (512, 1024, 8));
-		[[self contextTableView] reloadData];
-		
-		if (obstacleCount > 0) {
-			int lampCount = sdContextNumberOfLamps (shadowContext);
-			[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: obstacleCount + lampCount - 1] byExtendingSelection: NO];
-		}
+		[self _enqueAddObject: @"cylinder"];
 	}
 }
 
 - (IBAction) addRectangularObstacleAction: (id) sender {
 	if (shadowContext) {
-		int obstacleCount = sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (512, 1024, 20, 20, 0));
-		[[self contextTableView] reloadData];
-		
-		if (obstacleCount > 0) {
-			int lampCount = sdContextNumberOfLamps (shadowContext);
-			[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: obstacleCount + lampCount - 1] byExtendingSelection: NO];
-		}
+		[self _enqueAddObject: @"rectangle"];
 	}
 }
 
