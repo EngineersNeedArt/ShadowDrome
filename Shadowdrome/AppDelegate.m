@@ -5,6 +5,7 @@
 //  Created by John Calhoun on 3/7/24.
 //
 
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import "AppDelegate.h"
 #include "BitmapContext.h"
 #include "Lamp.h"
@@ -42,6 +43,11 @@
 @property (strong) IBOutlet NSTextField *obstacleRectangleRotationTextField;
 @property (strong) IBOutlet NSTextField *obstacleRectangleOpacityTextField;
 
+@property (strong) IBOutlet NSWindow *contextWindow;
+@property (strong) IBOutlet NSTextField *contextNameTextField;
+@property (strong) IBOutlet NSTextField *contextWidthTextField;
+@property (strong) IBOutlet NSTextField *contextHeightTextField;
+
 @property (strong) NSString *contextJSON;
 @end
 
@@ -55,7 +61,6 @@ BOOL renderComplete = YES;
 NSInteger nextRenderX = 0;
 NSInteger nextRenderY = 0;
 NSInteger renderIdentifier = -1;
-NSMutableArray<dispatch_queue_t> *workerQueues;
 double renderScale = 1.0;
 NSMutableArray<NSString *> *objectQueue;
 
@@ -235,39 +240,68 @@ NSMutableArray<NSString *> *objectQueue;
 	}
 }
 
-- (NSData *) _getFullsizeBitmapData {
-	NSData *bitmapData = NULL;
+- (void) _writeFullsizeBitmapDataToURL: (NSURL *) url {
 	BMContext *fullBitmap;
 	
 	fullBitmap = bmContextCreate (1024, 2048);
-//	fullBitmap = bmContextCreate (2048, 4096);
 	bmContextFillBuffer (fullBitmap, 0, 0, 0, 255);
-	sdContextRenderToBitmap (shadowContext, fullBitmap);
 	
-	CGDataProviderRef provider = CGDataProviderCreateWithData (NULL, bmContextBufferPtr(fullBitmap), bmContextBufferSize(fullBitmap), NULL);
-	CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
-	CGImageRef imageRef = CGImageCreate(bmContextWidth (fullBitmap), bmContextHeight (fullBitmap), 8, 32,
-			4 * bmContextWidth (fullBitmap), colorSpaceRef,
-			kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast, provider, NULL, YES,
-			kCGRenderingIntentDefault);
-	
-	NSImage *image = [[NSImage alloc] initWithCGImage: imageRef
-			size: NSMakeSize (bmContextWidth (fullBitmap), bmContextHeight (fullBitmap))];
-	
-	// No compression
-	NSData *data = [image TIFFRepresentation];
-	if (data != nil) {
-		NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc] initWithData: data];
-		if (bitmapRep != nil) {
-			bitmapData = [bitmapRep representationUsingType: NSBitmapImageFileTypePNG properties: @{}];
+//	sdContextRenderToBitmap (shadowContext, fullBitmap);
+	[self _renderToBitmap: fullBitmap async: NO completion: ^(BOOL success) {
+		NSData *bitmapData = NULL;
+		CGDataProviderRef provider = CGDataProviderCreateWithData (NULL, bmContextBufferPtr(fullBitmap), bmContextBufferSize (fullBitmap), NULL);
+		CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+		CGImageRef imageRef = CGImageCreate(bmContextWidth (fullBitmap), bmContextHeight (fullBitmap), 8, 32,
+				4 * bmContextWidth (fullBitmap), colorSpaceRef,
+				kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast, provider, NULL, YES,
+				kCGRenderingIntentDefault);
+		
+		NSImage *image = [[NSImage alloc] initWithCGImage: imageRef
+				size: NSMakeSize (bmContextWidth (fullBitmap), bmContextHeight (fullBitmap))];
+		
+		// No compression
+		NSData *data = [image TIFFRepresentation];
+		if (data != nil) {
+			NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc] initWithData: data];
+			if (bitmapRep != nil) {
+				bitmapData = [bitmapRep representationUsingType: NSBitmapImageFileTypePNG properties: @{}];
+			}
 		}
-	}
+		
+		CGImageRelease (imageRef);
+		CGColorSpaceRelease (colorSpaceRef);
+		CGDataProviderRelease (provider);
+		
+		if (bitmapData) {
+			[bitmapData writeToURL: url atomically: YES];
+		}
+	}];
+
 	
-	CGImageRelease (imageRef);
-	CGColorSpaceRelease (colorSpaceRef);
-	CGDataProviderRelease (provider);
-	
-	return bitmapData;
+//	CGDataProviderRef provider = CGDataProviderCreateWithData (NULL, bmContextBufferPtr(fullBitmap), bmContextBufferSize(fullBitmap), NULL);
+//	CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+//	CGImageRef imageRef = CGImageCreate(bmContextWidth (fullBitmap), bmContextHeight (fullBitmap), 8, 32,
+//			4 * bmContextWidth (fullBitmap), colorSpaceRef,
+//			kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast, provider, NULL, YES,
+//			kCGRenderingIntentDefault);
+//	
+//	NSImage *image = [[NSImage alloc] initWithCGImage: imageRef
+//			size: NSMakeSize (bmContextWidth (fullBitmap), bmContextHeight (fullBitmap))];
+//	
+//	// No compression
+//	NSData *data = [image TIFFRepresentation];
+//	if (data != nil) {
+//		NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc] initWithData: data];
+//		if (bitmapRep != nil) {
+//			bitmapData = [bitmapRep representationUsingType: NSBitmapImageFileTypePNG properties: @{}];
+//		}
+//	}
+//	
+//	CGImageRelease (imageRef);
+//	CGColorSpaceRelease (colorSpaceRef);
+//	CGDataProviderRelease (provider);
+//	
+//	return bitmapData;
 }
 
 - (void) _resetRenderQueue {
@@ -320,66 +354,51 @@ NSMutableArray<NSString *> *objectQueue;
 	CGDataProviderRelease (provider);
 }
 
-- (void) _renderPlayfield0 {
-	bmContextFillBuffer (bitmap, 0, 0, 0, 255);
-	sdContextRenderToBitmap (shadowContext, bitmap);
+- (void) _renderCore: (BMContext *) bitmap completion: (void (^)(BOOL success)) completionBlock {
+	// Create a dispatch group to keep track of completion
+	dispatch_group_t group = dispatch_group_create ();
 	
-	CGDataProviderRef provider = CGDataProviderCreateWithData (NULL, bmContextBufferPtr(bitmap), bmContextBufferSize(bitmap), NULL);
-	CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
-	CGImageRef imageRef = CGImageCreate(bmContextWidth (bitmap), bmContextHeight (bitmap), 8, 32,
-			4 * bmContextWidth (bitmap), colorSpaceRef,
-			kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast, provider, NULL, YES,
-			kCGRenderingIntentDefault);
-	
-	NSImage *image = [[NSImage alloc] initWithCGImage: imageRef
-			size: NSMakeSize (bmContextWidth (bitmap), bmContextHeight (bitmap))];
-	self.shadowImageView.image = image;
-	
-	CGImageRelease (imageRef);
-	CGColorSpaceRelease (colorSpaceRef);
-	CGDataProviderRelease (provider);
-}
-
-- (void) _renderPlayfield1 {
-	// Reset render queue, clear bitmap.
-	[self _resetRenderQueue];
-	bmContextFillBuffer (bitmap, 0, 0, 0, 255);
-	
-	dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-		int width = bmContextWidth (bitmap);
-		int height = bmContextHeight (bitmap);
-		renderScale = 1.0;
-		if ((width != shadowContext->width) || (height != shadowContext->height)) {
-			renderScale = MAX ((double) width / shadowContext->width, (double) height / shadowContext->height);
-		}
-		
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				double scaledX = (double) x / renderScale;
-				double scaledY = (double) y / renderScale;
-				double luminance = sdContextGetLuminanceForPoint (shadowContext, scaledX, scaledY);
-				luminance = luminance * 255.0;
-				luminance = MIN (luminance, 255.0);
-				luminance = MAX (luminance, 0.0);
-				
-				unsigned char red, green, blue, alpha;
-				bmContextGetPixel (bitmap, x, y, &red, &green, &blue, &alpha);
-				if (alpha > round (luminance)) {
-					alpha = alpha - round (luminance);
-				} else {
-					alpha = 0;
+	// Iterate through each pixel in the bitmap and dispatch tasks to the worker queues.
+	NSInteger identifier = renderIdentifier;
+	int width = bmContextWidth (bitmap);
+	int height = bmContextHeight (bitmap);
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			dispatch_group_async (group, dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				if (identifier == renderIdentifier) {
+					double scaledX = (double) x / renderScale;
+					double scaledY = (double) y / renderScale;
+					double luminance = sdContextGetLuminanceForPoint (shadowContext, scaledX, scaledY);
+					luminance = luminance * 255.0;
+					luminance = MIN (luminance, 255.0);
+					luminance = MAX (luminance, 0.0);
+					
+					unsigned char red, green, blue, alpha;
+					bmContextGetPixel (bitmap, x, y, &red, &green, &blue, &alpha);
+					if (alpha > round (luminance)) {
+						alpha = alpha - round (luminance);
+					} else {
+						alpha = 0;
+					}
+					bmContextSetPixel (bitmap, x, y, red, green, blue, alpha);
 				}
-				bmContextSetPixel (bitmap, x, y, red, green, blue, alpha);
-			}
+			});
 		}
-		
-		dispatch_async (dispatch_get_main_queue (), ^(void) {
-			[self _displayRenderedBitmap];
-		});
+	}
+	
+	// Wait for all tasks to complete
+	dispatch_group_wait (group, DISPATCH_TIME_FOREVER);
+	
+	dispatch_async (dispatch_get_main_queue (), ^(void) {
+		[self _dequeObjects];
+		renderComplete = YES;
+		if (completionBlock) {
+			completionBlock (identifier == renderIdentifier);
+		}
 	});
 }
 
-- (void) _renderPlayfield {
+- (void) _renderToBitmap: (BMContext *) bitmap async: (BOOL) async completion: (void (^)(BOOL success)) completionBlock {
 	if (shadowContext == NULL) {
 		return;
 	}
@@ -396,53 +415,13 @@ NSMutableArray<NSString *> *objectQueue;
 		renderScale = MAX ((double) width / shadowContext->width, (double) height / shadowContext->height);
 	}
 	
-	dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-		// Create a dispatch group to keep track of completion
-		dispatch_group_t group = dispatch_group_create ();
-		
-		// Iterate through each pixel in the bitmap and dispatch tasks to the worker queues.
-		NSInteger identifier = renderIdentifier;
-		for (int y = 0; y < height; y++) {
-			if (identifier != renderIdentifier) {
-				break;
-			}
-			for (int x = 0; x < width; x++) {
-				if (identifier != renderIdentifier) {
-					break;
-				}
-				dispatch_group_async (group, [workerQueues objectAtIndex: x % kNum_Queues], ^{
-					if (identifier == renderIdentifier) {
-						double scaledX = (double) x / renderScale;
-						double scaledY = (double) y / renderScale;
-						double luminance = sdContextGetLuminanceForPoint (shadowContext, scaledX, scaledY);
-						luminance = luminance * 255.0;
-						luminance = MIN (luminance, 255.0);
-						luminance = MAX (luminance, 0.0);
-						
-						unsigned char red, green, blue, alpha;
-						bmContextGetPixel (bitmap, x, y, &red, &green, &blue, &alpha);
-						if (alpha > round (luminance)) {
-							alpha = alpha - round (luminance);
-						} else {
-							alpha = 0;
-						}
-						bmContextSetPixel (bitmap, x, y, red, green, blue, alpha);
-					}
-				});
-			}
-		}
-		
-		// Wait for all tasks to complete
-		dispatch_group_wait (group, DISPATCH_TIME_FOREVER);
-		
-		dispatch_async (dispatch_get_main_queue (), ^(void) {
-			if (identifier == renderIdentifier) {
-				renderComplete = YES;
-				[self _dequeObjects];
-				[self _displayRenderedBitmap];
-			}
+	if (async) {
+		dispatch_async (dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void) {
+			[self _renderCore: bitmap completion: completionBlock];
 		});
-	});
+	} else {
+		[self _renderCore: bitmap completion: completionBlock];
+	}
 }
 
 - (void) _addObjectToContext: (NSString *) kind {
@@ -915,20 +894,17 @@ NSMutableArray<NSString *> *objectQueue;
 		[self _takeDataFromTextField: [obj object]];
 		[[self contextTableView] reloadData];
 		[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: row] byExtendingSelection: NO];
-		[self _renderPlayfield];
+		[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
+			if (success) {
+				[self _displayRenderedBitmap];
+			}
+		}];
 	}
 }
 
 #pragma mark - App Delegate
 
 - (void) applicationDidFinishLaunching: (NSNotification *) aNotification {
-	// Create array of eight background queues.
-	workerQueues = [NSMutableArray arrayWithCapacity: kNum_Queues];
-	for (int i = 0; i < kNum_Queues; i++) {
-		dispatch_queue_t queue = dispatch_queue_create ([[NSString stringWithFormat: @"com.shadowdrome.queue%d", i + 1] UTF8String], DISPATCH_QUEUE_PRIORITY_DEFAULT);
-		[workerQueues addObject: queue];
-	}
-	
 	// Create bitmap context.
 	int bitmapWidth = 128; 	// 512, 256;
 	int bitmapHeight = 256;	// 1024, 512;
@@ -942,7 +918,11 @@ NSMutableArray<NSString *> *objectQueue;
 //	[self addBaseballLightsAndObstacles];
 	
 	[[self contextTableView] reloadData];
-	[self _renderPlayfield];
+	[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
+		if (success) {
+			[self _displayRenderedBitmap];
+		}
+	}];
 }
 
 - (void) applicationWillTerminate: (NSNotification *) aNotification {
@@ -956,25 +936,56 @@ NSMutableArray<NSString *> *objectQueue;
 #pragma mark - Actions
 
 - (IBAction) newContext: (id) sender {
+	[NSApp runModalForWindow: _contextWindow];
+}
+
+- (IBAction) newContextOKAction: (id) sender {
+	NSString *name = [_contextNameTextField stringValue];
+	NSInteger width = [_contextWidthTextField integerValue];
+	NSInteger height = [_contextHeightTextField integerValue];
+	
 	if (shadowContext) {
 		sdContextFree (shadowContext);
 		shadowContext = NULL;
 	}
-	shadowContext = sdContextCreate ("temp", 1024, 2048);
+	
+	shadowContext = sdContextCreate ((char *) name.UTF8String, (int) width, (int) height);
 	shadowContext->version = 0;
 	shadowContext->tempScalar = 100;
 	[[self contextTableView] reloadData];
-	[self _renderPlayfield];
+	[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
+		if (success) {
+			[self _displayRenderedBitmap];
+		}
+	}];
+	
+	// Close the dialog
+	[NSApp stopModal];
+	[_contextWindow close];
+}
+
+- (IBAction) newContextCancelAction: (id) sender {
+	// Close the dialog
+	[NSApp stopModal];
+	[_contextWindow close];
 }
 
 - (IBAction) tempSlider: (id) sender {
 	shadowContext->tempScalar = [sender intValue];
-	[self _renderPlayfield];
+	[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
+		if (success) {
+			[self _displayRenderedBitmap];
+		}
+	}];
 }
 
 - (IBAction) tempSlider2: (id) sender {
 	shadowContext->tempOffset = [sender intValue];
-	[self _renderPlayfield];
+	[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
+		if (success) {
+			[self _displayRenderedBitmap];
+		}
+	}];
 }
 
 - (IBAction) addLampAction: (id) sender {
@@ -1011,6 +1022,7 @@ NSMutableArray<NSString *> *objectQueue;
 - (IBAction) openJSONRepresentation: (id) sender {
 	NSOpenPanel *openPanel = [NSOpenPanel openPanel];
 	openPanel.allowsMultipleSelection = NO;
+	[openPanel setAllowedContentTypes: [NSArray arrayWithObject: [UTType typeWithIdentifier: @"com.softdorothy.shadowdrome-document"]]];
 	[openPanel beginWithCompletionHandler:^ (NSInteger result) {
 		if (result == NSModalResponseOK) {
 			for (NSURL *oneURL in [openPanel URLs]) {
@@ -1024,7 +1036,11 @@ NSMutableArray<NSString *> *objectQueue;
 					shadowContext = sdContextCreateFromJSONRepresentation ([json cStringUsingEncoding: NSASCIIStringEncoding]);
 					wasSelectedRow = -1;
 					[[self contextTableView] reloadData];
-					[self _renderPlayfield];
+					[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
+						if (success) {
+							[self _displayRenderedBitmap];
+						}
+					}];
 				}
 			}
 		}
@@ -1033,7 +1049,10 @@ NSMutableArray<NSString *> *objectQueue;
 
 - (IBAction) saveJSONRepresentation: (id) sender {
 	NSSavePanel *panel = [NSSavePanel savePanel];
-	panel.nameFieldStringValue = [NSString stringWithFormat: @"%s.shadow", shadowContext->name];
+	
+	// Set the allowed content types, default filename.
+	[panel setAllowedContentTypes: [NSArray arrayWithObject: [UTType typeWithIdentifier: @"com.softdorothy.shadowdrome-document"]]];
+	panel.nameFieldStringValue = [NSString stringWithFormat: @"%s", shadowContext->name];
 	[panel beginWithCompletionHandler: ^(NSModalResponse result) {
 		if (result == NSModalResponseOK) {
 			NSString *json = [NSString stringWithCString: sdContextJSONRepresentation (shadowContext) encoding: NSASCIIStringEncoding];
@@ -1050,10 +1069,7 @@ NSMutableArray<NSString *> *objectQueue;
 	panel.nameFieldStringValue = [NSString stringWithFormat: @"%s_shadows.png", shadowContext->name];
 	[panel beginWithCompletionHandler: ^(NSModalResponse result) {
 		if (result == NSModalResponseOK) {
-			NSData *bitmapData = [self _getFullsizeBitmapData];
-			if (bitmapData) {
-				[bitmapData writeToURL: [panel URL] atomically: YES];
-			}
+			[self _writeFullsizeBitmapDataToURL: [panel URL]];
 		}
 	}];
 }
