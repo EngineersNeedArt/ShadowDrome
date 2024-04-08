@@ -78,9 +78,9 @@ void _obstacleAssignCylindricalVertices (Obstacle *obstacle) {
 	double *vertexPtr = obstacle->vertexArray;
 	for (int i = 0; i < obstacle->numVertices; i++) {
 		double xD = sin (i * M_PI * 2 / obstacle->numVertices) * obstacle->radius;
-		double yD = cos (i * M_PI * 2 / obstacle->numVertices) * obstacle->radius;
 		*vertexPtr = obstacle->xCenter + xD;
 		vertexPtr++;
+		double yD = cos (i * M_PI * 2 / obstacle->numVertices) * obstacle->radius;
 		*vertexPtr = obstacle->yCenter + yD;
 		if ((i + 1) < obstacle->numVertices) {
 			vertexPtr++;
@@ -292,6 +292,9 @@ Obstacle *obstacleSetRadius (Obstacle *obstacle, double radius) {
 		
 		// Compute new vertices.
 		_obstacleAssignCylindricalVertices (obstacle);
+		
+		// Find new min/max for x and y.
+		_obstacleAssignMinMaxBounds (obstacle);
 	}
 	
 	return obstacle;

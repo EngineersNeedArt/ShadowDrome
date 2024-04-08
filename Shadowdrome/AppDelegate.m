@@ -246,7 +246,6 @@ NSMutableArray<NSString *> *objectQueue;
 	fullBitmap = bmContextCreate (1024, 2048);
 	bmContextFillBuffer (fullBitmap, 0, 0, 0, 255);
 	
-//	sdContextRenderToBitmap (shadowContext, fullBitmap);
 	[self _renderToBitmap: fullBitmap async: NO completion: ^(BOOL success) {
 		NSData *bitmapData = NULL;
 		CGDataProviderRef provider = CGDataProviderCreateWithData (NULL, bmContextBufferPtr(fullBitmap), bmContextBufferSize (fullBitmap), NULL);
@@ -363,8 +362,10 @@ NSMutableArray<NSString *> *objectQueue;
 	int width = bmContextWidth (bitmap);
 	int height = bmContextHeight (bitmap);
 	for (int y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
-			dispatch_group_async (group, dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		dispatch_group_async (group, dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			// Let's do one row's worth of pixel data in one dispatch.
+			// Tryiong to go too fine grain seems to lead to slowdown from thread management overhead.
+			for (int x = 0; x < width; x++) {
 				if (identifier == renderIdentifier) {
 					double scaledX = (double) x / renderScale;
 					double scaledY = (double) y / renderScale;
@@ -382,8 +383,8 @@ NSMutableArray<NSString *> *objectQueue;
 					}
 					bmContextSetPixel (bitmap, x, y, red, green, blue, alpha);
 				}
-			});
-		}
+			}
+		});
 	}
 	
 	// Wait for all tasks to complete
