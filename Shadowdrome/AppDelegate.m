@@ -81,7 +81,7 @@ NSMutableArray<NSString *> *objectQueue;
 	return nil;
 }
 
-- (void) _takeDataFromTextField: (NSTextField *) textField {
+- (BOOL) _takeDataFromTextField: (NSTextField *) textField {
 	NSInteger tag = [textField tag];
 	NSInteger index = wasSelectedRow;
 	if (index >= sdContextNumberOfLamps (shadowContext)) {
@@ -90,49 +90,49 @@ NSMutableArray<NSString *> *objectQueue;
 		switch (tag) {
 			case 0:
 			if (obstacle->xCenter == round ([textField doubleValue])) {
-				return;
+				return NO;
 			}
 			obstacleSetXY (obstacle, round ([textField doubleValue]), obstacle->yCenter);
 			break;
 			
 			case 1:
 			if (obstacle->yCenter == round ([textField doubleValue])) {
-				return;
+				return NO;
 			}
 			obstacleSetXY (obstacle, obstacle->xCenter, round ([textField doubleValue]));
 			break;
 			
 			case 2:
 			if (obstacle->radius == round ([textField doubleValue])) {
-				return;
+				return NO;
 			}
 			obstacleSetRadius (obstacle, round ([textField doubleValue]));
 			break;
 			
 			case 3:
 			if (obstacle->rotationDegrees == [textField doubleValue]) {
-				return;
+				return NO;
 			}
 			obstacleSetRotationDegrees (obstacle, [textField doubleValue]);
 			break;
 			
 			case 4:
 			if (obstacle->width == round ([textField doubleValue])) {
-				return;
+				return NO;
 			}
 			obstacleSetWidth (obstacle, round ([textField doubleValue]));
 			break;
 			
 			case 5:
 			if (obstacle->height == round ([textField doubleValue])) {
-				return;
+				return NO;
 			}
 			obstacleSetHeight (obstacle, round ([textField doubleValue]));
 			break;
 			
 			case 6:
 			if (obstacle->opacity == [textField doubleValue]) {
-				return;
+				return NO;
 			}
 			obstacle->opacity = [textField doubleValue];
 			break;
@@ -145,28 +145,28 @@ NSMutableArray<NSString *> *objectQueue;
 		switch (tag) {
 			case 0:
 			if (lamp->xLoc == round ([textField doubleValue])) {
-				return;
+				return NO;
 			}
 			lamp->xLoc = round ([textField doubleValue]);
 			break;
 			
 			case 1:
 			if (lamp->yLoc == round ([textField doubleValue])) {
-				return;
+				return NO;
 			}
 			lamp->yLoc = round ([textField doubleValue]);
 			break;
 			
 			case 2:
 			if (lamp->radius == round ([textField doubleValue])) {
-				return;
+				return NO;
 			}
 			lamp->radius = round ([textField doubleValue]);
 			break;
 			
 			case 3:
 			if (lamp->intensity == round ([textField doubleValue])) {
-				return;
+				return NO;
 			}
 			lamp->intensity = round ([textField doubleValue]);
 			break;
@@ -175,15 +175,20 @@ NSMutableArray<NSString *> *objectQueue;
 			break;
 		}
 	}
+	
+	return YES;
 }
 
-- (void) _capture {
+- (void) _captureTextFieldEditor {
 	NSWindow *keyWindow = [[NSApplication sharedApplication] keyWindow];
 	NSResponder *currentResponder = [keyWindow firstResponder];
 	if ([currentResponder isKindOfClass: [NSTextView class]]) {
 		NSTextField *textField = [self _findOwningTextFieldFromTextView: (NSTextView *) currentResponder];
 		if ([textField currentEditor] != NULL) {
-			[self _takeDataFromTextField: textField];
+			BOOL changed = [self _takeDataFromTextField: textField];
+			if (changed) {
+				[self _kickOffRenderAndDisplay];
+			}
 		}
 	}
 }
@@ -243,7 +248,7 @@ NSMutableArray<NSString *> *objectQueue;
 - (void) _writeFullsizeBitmapDataToURL: (NSURL *) url {
 	BMContext *fullBitmap;
 	
-	fullBitmap = bmContextCreate (1024, 2048);
+	fullBitmap = bmContextCreate (shadowContext->width, shadowContext->height);
 	bmContextFillBuffer (fullBitmap, 0, 0, 0, 255);
 	
 	[self _renderToBitmap: fullBitmap async: NO completion: ^(BOOL success) {
@@ -425,23 +430,36 @@ NSMutableArray<NSString *> *objectQueue;
 	}
 }
 
+- (void) _kickOffRenderAndDisplay {
+	[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
+		if (success) {
+			[self _displayRenderedBitmap];
+			NSLog (@"Displayed");
+		} else {
+			NSLog (@"Did not render");
+		}
+	}];
+}
+
 - (void) _addObjectToContext: (NSString *) kind {
+	int halfWidth = shadowContext->width / 2;
+	int halfHeight = shadowContext->height / 2;
 	newObjectAdded = YES;
 	if ([kind isEqualToString: @"lamp"]) {
-		int lampCount = sdContextAddLamp (shadowContext, lampCreate (512, 1024));
+		int lampCount = sdContextAddLamp (shadowContext, lampCreate (halfWidth, halfHeight));
 		[[self contextTableView] reloadData];
 		if (lampCount > 0) {
 			[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: lampCount - 1] byExtendingSelection: NO];
 		}
 	} else if ([kind isEqualToString: @"cylinder"]) {
-		int obstacleCount = sdContextAddObstacle (shadowContext, obstacleCreateCylinder (512, 1024, 8));
+		int obstacleCount = sdContextAddObstacle (shadowContext, obstacleCreateCylinder (halfWidth, halfHeight, 8));
 		[[self contextTableView] reloadData];
 		if (obstacleCount > 0) {
 			int lampCount = sdContextNumberOfLamps (shadowContext);
 			[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: obstacleCount + lampCount - 1] byExtendingSelection: NO];
 		}
 	} else if ([kind isEqualToString: @"rectangle"]) {
-		int obstacleCount = sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (512, 1024, 20, 20, 0));
+		int obstacleCount = sdContextAddObstacle (shadowContext, obstacleCreateRotatedRectangularPrism (halfWidth, halfHeight, 20, 20, 0));
 		[[self contextTableView] reloadData];
 		
 		if (obstacleCount > 0) {
@@ -456,11 +474,13 @@ NSMutableArray<NSString *> *objectQueue;
 		[self _addObjectToContext: kind];
 	}
 	[objectQueue removeAllObjects];
+//	[self _kickOffRenderAndDisplay];
 }
 
 - (void) _enqueAddObject: (NSString *) kind {
 	if (renderComplete) {
 		[self _addObjectToContext: kind];
+		[self _kickOffRenderAndDisplay];
 	} else {
 		if (objectQueue == NULL) {
 			objectQueue = [NSMutableArray array];
@@ -469,11 +489,23 @@ NSMutableArray<NSString *> *objectQueue;
 	}
 }
 
+- (void) _createPreviewBitmapContext {
+	if (bitmap) {
+		bmContextFree (bitmap);
+		bitmap = NULL;
+	}
+	
+	int bitmapWidth = shadowContext->width / 10; 	// 512, 256, 128;
+	int bitmapHeight = shadowContext->height / 10;	// 1024, 512, 256;
+	bitmap = bmContextCreate (bitmapWidth, bitmapHeight);
+}
+
 #pragma mark - Sample contexts
 
 - (void) test0 {
 	shadowContext = sdContextCreate ("test", 1024, 2048);
 	shadowContext->tempScalar = 2000;
+	[self _createPreviewBitmapContext];
 	
 	sdContextAddLamp (shadowContext, lampCreate (450, 990));
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (550, 1010, 10));
@@ -487,6 +519,7 @@ NSMutableArray<NSString *> *objectQueue;
 - (void) test1 {
 	shadowContext = sdContextCreate ("test", 1024, 2048);
 	shadowContext->tempScalar = 300;
+	[self _createPreviewBitmapContext];
 	
 	sdContextAddLamp (shadowContext, lampCreate (256, 768));
 	sdContextAddLamp (shadowContext, lampCreate (768, 768));
@@ -502,6 +535,7 @@ NSMutableArray<NSString *> *objectQueue;
 - (void) test2 {
 	shadowContext = sdContextCreate ("test", 1024, 2048);
 	shadowContext->tempScalar = 3000;
+	[self _createPreviewBitmapContext];
 	
 	int gap = 256;
 	int divisionsX = 1024 / gap;
@@ -538,6 +572,7 @@ NSMutableArray<NSString *> *objectQueue;
 	shadowContext = sdContextCreate ("blue_note", 1024, 2048);
 	shadowContext->version = 0;
 	shadowContext->tempScalar = 100;
+	[self _createPreviewBitmapContext];
 	
 	// Lights.
 	sdContextAddLamp (shadowContext, lampCreate (259, 341));
@@ -645,7 +680,8 @@ NSMutableArray<NSString *> *objectQueue;
 	shadowContext->version = 0;
 	shadowContext->tempScalar = 2000;
 	shadowContext->tempOffset = 100;
-
+	[self _createPreviewBitmapContext];
+	
 	// Lights.
 	sdContextAddLamp (shadowContext, lampCreate (104, 368));
 	sdContextAddLamp (shadowContext, lampCreate (772, 368));
@@ -725,6 +761,7 @@ NSMutableArray<NSString *> *objectQueue;
 	shadowContext->version = 0;
 	shadowContext->tempScalar = 75;
 	shadowContext->tempOffset = 0;
+	[self _createPreviewBitmapContext];
 	
 	// Lights.
 	sdContextAddLamp (shadowContext, lampCreate (67, 430));
@@ -871,7 +908,7 @@ NSMutableArray<NSString *> *objectQueue;
 - (void) tableViewSelectionDidChange :(NSNotification *) notification {
 	if ([notification object] == _contextTableView) {
 		NSInteger selectedRow = [_contextTableView selectedRow];
-		[self _capture];
+		[self _captureTextFieldEditor];
 		[self _showDetailForObjectAtIndex: selectedRow];
 		wasSelectedRow = selectedRow;
 		if (newObjectAdded) {
@@ -892,25 +929,18 @@ NSMutableArray<NSString *> *objectQueue;
 	}
 	NSInteger row = [_contextTableView selectedRow];
 	if (row >= 0) {
-		[self _takeDataFromTextField: [obj object]];
+		BOOL changed = [self _takeDataFromTextField: [obj object]];
 		[[self contextTableView] reloadData];
 		[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: row] byExtendingSelection: NO];
-		[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
-			if (success) {
-				[self _displayRenderedBitmap];
-			}
-		}];
+		if (changed) {
+			[self _kickOffRenderAndDisplay];
+		}
 	}
 }
 
 #pragma mark - App Delegate
 
 - (void) applicationDidFinishLaunching: (NSNotification *) aNotification {
-	// Create bitmap context.
-	int bitmapWidth = 128; 	// 512, 256;
-	int bitmapHeight = 256;	// 1024, 512;
-	bitmap = bmContextCreate (bitmapWidth, bitmapHeight);
-	
 //	[self test0];
 //	[self test1];
 //	[self test2];
@@ -918,12 +948,8 @@ NSMutableArray<NSString *> *objectQueue;
 //	[self addGigiLightsAndObstacles];
 //	[self addBaseballLightsAndObstacles];
 	
-	[[self contextTableView] reloadData];
-	[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
-		if (success) {
-			[self _displayRenderedBitmap];
-		}
-	}];
+//	[[self contextTableView] reloadData];
+//	[self _kickOffRenderAndDisplay];
 }
 
 - (void) applicationWillTerminate: (NSNotification *) aNotification {
@@ -943,7 +969,17 @@ NSMutableArray<NSString *> *objectQueue;
 - (IBAction) newContextOKAction: (id) sender {
 	NSString *name = [_contextNameTextField stringValue];
 	NSInteger width = [_contextWidthTextField integerValue];
+	if (width < 128) {
+		width = 128;
+	} else if (width > 1024) {
+		width = 1024;
+	}
 	NSInteger height = [_contextHeightTextField integerValue];
+	if (height < 128) {
+		height = 128;
+	} else if (height > 2048) {
+		height = 2048;
+	}
 	
 	if (shadowContext) {
 		sdContextFree (shadowContext);
@@ -953,12 +989,9 @@ NSMutableArray<NSString *> *objectQueue;
 	shadowContext = sdContextCreate ((char *) name.UTF8String, (int) width, (int) height);
 	shadowContext->version = 0;
 	shadowContext->tempScalar = 100;
+	[self _createPreviewBitmapContext];
 	[[self contextTableView] reloadData];
-	[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
-		if (success) {
-			[self _displayRenderedBitmap];
-		}
-	}];
+	[self _kickOffRenderAndDisplay];
 	
 	// Close the dialog
 	[NSApp stopModal];
@@ -973,20 +1006,12 @@ NSMutableArray<NSString *> *objectQueue;
 
 - (IBAction) tempSlider: (id) sender {
 	shadowContext->tempScalar = [sender intValue];
-	[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
-		if (success) {
-			[self _displayRenderedBitmap];
-		}
-	}];
+	[self _kickOffRenderAndDisplay];
 }
 
 - (IBAction) tempSlider2: (id) sender {
 	shadowContext->tempOffset = [sender intValue];
-	[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
-		if (success) {
-			[self _displayRenderedBitmap];
-		}
-	}];
+	[self _kickOffRenderAndDisplay];
 }
 
 - (IBAction) addLampAction: (id) sender {
@@ -1035,13 +1060,10 @@ NSMutableArray<NSString *> *objectQueue;
 						shadowContext = NULL;
 					}
 					shadowContext = sdContextCreateFromJSONRepresentation ([json cStringUsingEncoding: NSASCIIStringEncoding]);
+					[self _createPreviewBitmapContext];
 					wasSelectedRow = -1;
 					[[self contextTableView] reloadData];
-					[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
-						if (success) {
-							[self _displayRenderedBitmap];
-						}
-					}];
+					[self _kickOffRenderAndDisplay];
 				}
 			}
 		}
