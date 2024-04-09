@@ -57,14 +57,24 @@ If I had treated the `Lamps` as point-sources, there would have been very hard e
 
 By adding all the results of all these extra line-of-sight tests to the luminosity for each pixel you can imagine now how the penumbra forms. For pixels clearly in full gaze of the lamp, they will be fully lit. And similarly, pixels fully obscured from all points of the lamp even when the lamp radius is allowed, are completely in shadow. However, we have now introduced the edge cases where some fraction of the lamp is visible from the vantage point of the pixel, but not all. These pixels get only a proportional amount of illumination from the lamp and will "feather" the edges of the shadows.
 
+### Creating Shadows
+
+TBD
+
+### Data In and Out
+
+I added a simple JSON representation for the shadow context. This then allows you to save the state of a shadow context that you create as a text file and then later open the file and read it back in to restore the shadow context. While the `Obstacles` in the shadow context reduce to polygons (arrays of `x/y` coordinates) I try to preserve to a degree the means by which the obstacles were created in the UI. So that a cyclindrical `Obstacle` with some radius is not exported in JSON as the vertices but instead as the original `x/y` center of the cylinder and the radius. By doing so the UI of the app can continue to allow the user to simply change the value of the radii and have a new set of vertices generated.
+
+The **Open Shadow** and **Save Shadow** buttons in the UI are for opening and saving these JSON files — they use a `.shadow` prefix.
+
+The **Export Bitmap** button is the control that generates the high resolution PNG file that you can then use for virtual pinball.
+
+_Warning: generating the PNG image can be slow as it works at the full resolution of your shadow context._
+
 ### Future State
 
-So much to do still. At the very least I would like to read (write?) some kind of file-representation of a table's lights and obstacles. In that way other tools can be used to create the specification files and **ShadowDrome** can just render. (Either a UI front end to create the file or better still some means to parse a VPX table and extract the relevant information.) I'm picturing a simple JSON or XML specification.
+Performance is extremely lacking in the code. Only the most obvious performance optimizations were implemented in the core: like the initial test to see if a pixel is enclosed by an obstacle, or returning when the first edge of a polygon is found to intersect a line-of-sight line segment.
 
-But building a front end editor would be very cool. If you could pull in the playfield artwork for a table as a reference to help you then add lights, obstacles from a tool menu or palette. Drag lights around, resize obstacles, create arbitrary polygons. Then go in and change the intensity of the lights....
-
-Performance is extremely lacking in the code. Only the most obvious performance optimizations were implemented: like the initial test to see if a pixel is enclosed by an obstacle, or returning when the first edge of a polygon is found to intersect a line-of-sight line segment. Since the calculation is so "parallelizable", a low hanging fruit would be to spawn as many threads as the CPU it is running on has cores. For my MacBook (8 cores) I would see almost an order of magnitude speed boost.
+For the calling application I did take advantage of MacOS's GCD (Grand Central Dispatch) so that all the useable cores on a device will be pressed into service to handle the ray-tracing. That was a huge win.
 
 As hinted at earlier, adding a 3rd dimension to the ray-tracing would allow more complex but realistic shadow generation. As an example, many pinball tables have a round target whose shadow ought to be an elongated ellipse, not a frustum as the current implementation would generate.
-
-Anyway, I could go on, but the above are probably my short list of features.
