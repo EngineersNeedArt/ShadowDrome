@@ -191,7 +191,7 @@ CA
                                     <action selector="addLampAction:" target="Voe-Tx-rLC" id="m1x-44-IfQ"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Add Cylinder" state="on" keyEquivalent="2" id="f1l-q7-7bV">
+                            <menuItem title="Add Cylinder" keyEquivalent="2" id="f1l-q7-7bV">
                                 <connections>
                                     <action selector="addCylindricalObstacleAction:" target="Voe-Tx-rLC" id="jET-9t-vJI"/>
                                 </connections>
@@ -303,23 +303,12 @@ CA
                                 <rect key="frame" x="393" y="0.0" width="381" height="768"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
-                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tPD-Yz-yqr">
-                                        <rect key="frame" x="48" y="6" width="74" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <buttonCell key="cell" type="push" title="💡⌘1" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="moR-sn-g7C">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" size="13" name=".AppleColorEmojiUI"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="addLampAction:" target="Voe-Tx-rLC" id="g3N-ay-3r8"/>
-                                        </connections>
-                                    </button>
                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gie-1X-K8u">
                                         <rect key="frame" x="120" y="6" width="74" height="32"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <buttonCell key="cell" type="push" title="🔵⌘2" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ZAL-c5-EU1">
+                                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Cylinder" imagePosition="only" alignment="center" controlSize="large" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ZAL-c5-EU1">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" size="13" name=".AppleColorEmojiUI"/>
+                                            <font key="font" metaFont="system"/>
                                         </buttonCell>
                                         <connections>
                                             <action selector="addCylindricalObstacleAction:" target="Voe-Tx-rLC" id="Z0a-3D-oyf"/>
@@ -328,9 +317,9 @@ CA
                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7kK-Be-afZ">
                                         <rect key="frame" x="192" y="6" width="74" height="32"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <buttonCell key="cell" type="push" title="🟦⌘3" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zf8-xs-AZ3">
+                                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Rectangle" imagePosition="only" alignment="center" controlSize="large" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zf8-xs-AZ3">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" size="13" name=".AppleColorEmojiUI"/>
+                                            <font key="font" metaFont="system"/>
                                         </buttonCell>
                                         <connections>
                                             <action selector="addRectangularObstacleAction:" target="Voe-Tx-rLC" id="79N-lT-bim"/>
@@ -863,6 +852,17 @@ CA
                                         <rect key="frame" x="12" y="44" width="357" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                     </box>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kl7-S3-cC2">
+                                        <rect key="frame" x="295" y="7" width="72" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                        <buttonCell key="cell" type="push" title="🗑️" bezelStyle="rounded" alignment="center" controlSize="large" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3kP-KE-pVB">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="deleteLampObstacleAction:" target="Voe-Tx-rLC" id="AWK-dd-3oI"/>
+                                        </connections>
+                                    </button>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lZi-Z3-B4z">
                                         <rect key="frame" x="14" y="15" width="35" height="16"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -872,15 +872,15 @@ CA
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kl7-S3-cC2">
-                                        <rect key="frame" x="294" y="6" width="74" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                        <buttonCell key="cell" type="push" title="🗑️⌫" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3kP-KE-pVB">
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tPD-Yz-yqr">
+                                        <rect key="frame" x="48" y="6" width="74" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Light" imagePosition="overlaps" alignment="center" controlSize="large" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="moR-sn-g7C">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" size="13" name=".AppleColorEmojiUI"/>
+                                            <font key="font" metaFont="system"/>
                                         </buttonCell>
                                         <connections>
-                                            <action selector="deleteLampObstacleAction:" target="Voe-Tx-rLC" id="AWK-dd-3oI"/>
+                                            <action selector="addLampAction:" target="Voe-Tx-rLC" id="g3N-ay-3r8"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -1074,4 +1074,9 @@ DQ
             <point key="canvasLocation" x="82.5" y="310"/>
         </window>
     </objects>
+    <resources>
+        <image name="Cylinder" width="96" height="96"/>
+        <image name="Light" width="96" height="96"/>
+        <image name="Rectangle" width="96" height="96"/>
+    </resources>
 </document>

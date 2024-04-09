@@ -434,9 +434,6 @@ NSMutableArray<NSString *> *objectQueue;
 	[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
 		if (success) {
 			[self _displayRenderedBitmap];
-			NSLog (@"Displayed");
-		} else {
-			NSLog (@"Did not render");
 		}
 	}];
 }
