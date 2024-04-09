@@ -18,6 +18,7 @@
 		26B858682B9CAC30003B278C /* ShadowContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 26B858672B9CAC30003B278C /* ShadowContext.c */; };
 		26B8586B2B9CAE17003B278C /* Lamp.c in Sources */ = {isa = PBXBuildFile; fileRef = 26B8586A2B9CAE17003B278C /* Lamp.c */; };
 		26B8C8B12BC2437500608215 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26B8C8B02BC2437500608215 /* UniformTypeIdentifiers.framework */; };
+		26B8C8B62BC5B12800608215 /* OverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 26B8C8B52BC5B12800608215 /* OverlayView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,8 @@
 		26B8C8AC2BC1ACF700608215 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		26B8C8AE2BC236A800608215 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		26B8C8B02BC2437500608215 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
+		26B8C8B42BC5B12800608215 /* OverlayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OverlayView.h; sourceTree = "<group>"; };
+		26B8C8B52BC5B12800608215 /* OverlayView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OverlayView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +92,8 @@
 				26B8586A2B9CAE17003B278C /* Lamp.c */,
 				26A78C662B9FE8D3008C2EBA /* Obstacle.h */,
 				26A78C652B9FE8D3008C2EBA /* Obstacle.c */,
+				26B8C8B42BC5B12800608215 /* OverlayView.h */,
+				26B8C8B52BC5B12800608215 /* OverlayView.m */,
 				26B858662B9CAC30003B278C /* ShadowContext.h */,
 				26B858672B9CAC30003B278C /* ShadowContext.c */,
 				267090B22BAA4E8700EB10F4 /* ShadowContextJSONLayer.h */,
@@ -185,6 +190,7 @@
 				2655BB822B99ECC7007E26F4 /* BitmapContext.c in Sources */,
 				267090B12BAA4D5300EB10F4 /* cJSON.c in Sources */,
 				2655BB722B99EC9E007E26F4 /* AppDelegate.m in Sources */,
+				26B8C8B62BC5B12800608215 /* OverlayView.m in Sources */,
 				26B858682B9CAC30003B278C /* ShadowContext.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

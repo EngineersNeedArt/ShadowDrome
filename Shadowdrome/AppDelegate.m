@@ -7,6 +7,7 @@
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import "AppDelegate.h"
+#include "OverlayView.h"
 #include "BitmapContext.h"
 #include "Lamp.h"
 #include "Obstacle.h"
@@ -43,10 +44,15 @@
 @property (strong) IBOutlet NSTextField *obstacleRectangleRotationTextField;
 @property (strong) IBOutlet NSTextField *obstacleRectangleOpacityTextField;
 
+@property (strong) IBOutlet NSTextField *value1TextField;	// Temporary, experimental value.
+@property (strong) IBOutlet NSTextField *value2TextField;	// Temporary, experimental value.
+
 @property (strong) IBOutlet NSWindow *contextWindow;
 @property (strong) IBOutlet NSTextField *contextNameTextField;
 @property (strong) IBOutlet NSTextField *contextWidthTextField;
 @property (strong) IBOutlet NSTextField *contextHeightTextField;
+
+@property (strong) OverlayView *overlayView;
 
 @property (strong) NSString *contextJSON;
 @end
@@ -434,6 +440,7 @@ NSMutableArray<NSString *> *objectQueue;
 	[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
 		if (success) {
 			[self _displayRenderedBitmap];
+			[[self overlayView] setNeedsDisplay: YES];
 		}
 	}];
 }
@@ -503,6 +510,7 @@ NSMutableArray<NSString *> *objectQueue;
 	shadowContext = sdContextCreate ("test", 1024, 2048);
 	shadowContext->tempScalar = 2000;
 	[self _createPreviewBitmapContext];
+	[_overlayView setContextSize: NSMakeSize (1024, 2048)];
 	
 	sdContextAddLamp (shadowContext, lampCreate (450, 990));
 	sdContextAddObstacle (shadowContext, obstacleCreateCylinder (550, 1010, 10));
@@ -517,6 +525,7 @@ NSMutableArray<NSString *> *objectQueue;
 	shadowContext = sdContextCreate ("test", 1024, 2048);
 	shadowContext->tempScalar = 300;
 	[self _createPreviewBitmapContext];
+	[_overlayView setContextSize: NSMakeSize (1024, 2048)];
 	
 	sdContextAddLamp (shadowContext, lampCreate (256, 768));
 	sdContextAddLamp (shadowContext, lampCreate (768, 768));
@@ -533,6 +542,7 @@ NSMutableArray<NSString *> *objectQueue;
 	shadowContext = sdContextCreate ("test", 1024, 2048);
 	shadowContext->tempScalar = 3000;
 	[self _createPreviewBitmapContext];
+	[_overlayView setContextSize: NSMakeSize (1024, 2048)];
 	
 	int gap = 256;
 	int divisionsX = 1024 / gap;
@@ -570,6 +580,7 @@ NSMutableArray<NSString *> *objectQueue;
 	shadowContext->version = 0;
 	shadowContext->tempScalar = 100;
 	[self _createPreviewBitmapContext];
+	[_overlayView setContextSize: NSMakeSize (1024, 2048)];
 	
 	// Lights.
 	sdContextAddLamp (shadowContext, lampCreate (259, 341));
@@ -678,6 +689,7 @@ NSMutableArray<NSString *> *objectQueue;
 	shadowContext->tempScalar = 2000;
 	shadowContext->tempOffset = 100;
 	[self _createPreviewBitmapContext];
+	[_overlayView setContextSize: NSMakeSize (1024, 2048)];
 	
 	// Lights.
 	sdContextAddLamp (shadowContext, lampCreate (104, 368));
@@ -759,6 +771,7 @@ NSMutableArray<NSString *> *objectQueue;
 	shadowContext->tempScalar = 75;
 	shadowContext->tempOffset = 0;
 	[self _createPreviewBitmapContext];
+	[_overlayView setContextSize: NSMakeSize (1024, 2048)];
 	
 	// Lights.
 	sdContextAddLamp (shadowContext, lampCreate (67, 430));
@@ -905,6 +918,26 @@ NSMutableArray<NSString *> *objectQueue;
 - (void) tableViewSelectionDidChange :(NSNotification *) notification {
 	if ([notification object] == _contextTableView) {
 		NSInteger selectedRow = [_contextTableView selectedRow];
+		[_overlayView clearCrossHair];
+		if (selectedRow != NSNotFound) {
+			NSPoint center;
+			if (selectedRow < sdContextNumberOfLamps (shadowContext)) {
+				Lamp *lamp = sdContextLampAtIndex (shadowContext, (int) selectedRow);
+				if (lamp) {
+					center.x = lamp->xLoc;
+					center.y = lamp->yLoc;
+					[_overlayView setCrosshair: center];
+				}
+			} else {
+				int index = (int) selectedRow - sdContextNumberOfLamps (shadowContext);
+				Obstacle *obstacle = sdContextObstacleAtIndex (shadowContext, index);
+				if (obstacle) {
+					center.x = obstacle->xCenter;
+					center.y = obstacle->yCenter;
+					[_overlayView setCrosshair: center];
+				}
+			}
+		}
 		[self _captureTextFieldEditor];
 		[self _showDetailForObjectAtIndex: selectedRow];
 		wasSelectedRow = selectedRow;
@@ -924,13 +957,29 @@ NSMutableArray<NSString *> *objectQueue;
 	if (shadowContext == NULL) {
 		return;
 	}
-	NSInteger row = [_contextTableView selectedRow];
-	if (row >= 0) {
-		BOOL changed = [self _takeDataFromTextField: [obj object]];
-		[[self contextTableView] reloadData];
-		[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: row] byExtendingSelection: NO];
-		if (changed) {
+	
+	NSInteger tag = [[obj object] tag];
+	if (tag == -1) {
+		int newScalar = [[obj object] intValue];
+		if (shadowContext->tempScalar != newScalar) {
+			shadowContext->tempScalar = newScalar;
 			[self _kickOffRenderAndDisplay];
+		}
+	} else if (tag == -2) {
+		int newOffset = [[obj object] intValue];
+		if (shadowContext->tempOffset != newOffset) {
+			shadowContext->tempOffset = newOffset;
+			[self _kickOffRenderAndDisplay];
+		}
+	} else {
+		NSInteger row = [_contextTableView selectedRow];
+		if (row >= 0) {
+			BOOL changed = [self _takeDataFromTextField: [obj object]];
+			[[self contextTableView] reloadData];
+			[_contextTableView selectRowIndexes: [NSIndexSet indexSetWithIndex: row] byExtendingSelection: NO];
+			if (changed) {
+				[self _kickOffRenderAndDisplay];
+			}
 		}
 	}
 }
@@ -938,6 +987,12 @@ NSMutableArray<NSString *> *objectQueue;
 #pragma mark - App Delegate
 
 - (void) applicationDidFinishLaunching: (NSNotification *) aNotification {
+	
+	CGRect frame = _shadowImageView.frame;
+	_overlayView = [[OverlayView alloc] initWithFrame: frame];
+	[_overlayView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+	[[_shadowImageView superview] addSubview: _overlayView positioned: NSWindowAbove relativeTo: _shadowImageView];
+	
 //	[self test0];
 //	[self test1];
 //	[self test2];
@@ -987,8 +1042,11 @@ NSMutableArray<NSString *> *objectQueue;
 	shadowContext->version = 0;
 	shadowContext->tempScalar = 100;
 	[self _createPreviewBitmapContext];
+	[_overlayView setContextSize: NSMakeSize (width, height)];
 	[[self contextTableView] reloadData];
 	[self _kickOffRenderAndDisplay];
+	[_value1TextField setIntValue: shadowContext->tempScalar];
+	[_value2TextField setIntValue: shadowContext->tempOffset];
 	
 	// Close the dialog
 	[NSApp stopModal];
@@ -1058,9 +1116,12 @@ NSMutableArray<NSString *> *objectQueue;
 					}
 					shadowContext = sdContextCreateFromJSONRepresentation ([json cStringUsingEncoding: NSASCIIStringEncoding]);
 					[self _createPreviewBitmapContext];
+					[[self overlayView] setContextSize: NSMakeSize (shadowContext->width, shadowContext->height)];
 					wasSelectedRow = -1;
 					[[self contextTableView] reloadData];
 					[self _kickOffRenderAndDisplay];
+					[[self value1TextField] setIntValue: shadowContext->tempScalar];
+					[[self value2TextField] setIntValue: shadowContext->tempOffset];
 				}
 			}
 		}
