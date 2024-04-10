@@ -94,11 +94,16 @@ int _sdPointInObstacle (double x, double y, Obstacle *obstacle) {
 
 // Returns [0.0 (no obstacle) ... 1.0 (light fully blocked)].
 
-double _sdTestTotalObstacleOpacity (SDContext *context, double x0, double y0, double x1, double y1) {
+double _sdTestTotalObstacleOpacity (SDContext *context, double x0, double y0, double x1, double y1, Obstacle *ignore) {
 	bool isObstacle = false;
 	double transparency = 1.0;
 	Obstacle *obstaclePtr = context->obstacleArray;
 	for (int o = 0; o < context->obstacleCount; o++) {
+		// Skip obstacle if ignore.
+		if (obstaclePtr == ignore) {
+			obstaclePtr++;
+			continue;
+		}
 		if (obstaclePtr->opacity == 0.0) {
 			obstaclePtr++;
 			continue;
@@ -171,7 +176,7 @@ double _sdMapIntensity (SDContext *context, double distanceSquared, double inten
 //	return (intensity * 500) / (distance * distance);
 }
 
-double _sdLuminanceForLamp (SDContext *context, double x, double y, Lamp *lamp) {
+double _sdLuminanceForLamp (SDContext *context, double x, double y, Lamp *lamp, Obstacle *ignore) {
 	double luminance = 0.0;
 	int sampleCount = round (lamp->radius);
 	for (int i = 0; i <= sampleCount + 1; i++) {
@@ -179,7 +184,7 @@ double _sdLuminanceForLamp (SDContext *context, double x, double y, Lamp *lamp) 
 		double filamentIntensity = fabs (filamentDistance / lamp->radius) * lamp->intensity;
 		double xLoc, yLoc;
 		_sdGetFilamentPointForLamp (lamp, x, y, filamentDistance, &xLoc, &yLoc);
-		double opacity = _sdTestTotalObstacleOpacity (context, x, y, xLoc, yLoc);
+		double opacity = _sdTestTotalObstacleOpacity (context, x, y, xLoc, yLoc, ignore);
 		if (opacity < 1.0) {
 			double xDistance = xLoc - x;
 			double yDistance = yLoc - y;
@@ -367,24 +372,30 @@ double sdContextGetLuminanceForPoint (SDContext *context, double x, double y) {
 		return 0.0;
 	}
 	
-	double luminance = 0.0;
-	
 	Obstacle *obstaclePtr = context->obstacleArray;
+	Obstacle *ignore = NULL;
 	for (int o = 0; o < context->obstacleCount; o++) {
 		if (_sdPointInObstacle (x, y, obstaclePtr)) {
-			if (obstaclePtr->opacity == 0.0) {
-				return 1.0;
+			if (context->version == 0) {
+				if (obstaclePtr->opacity == 0.0) {
+					return 1.0;
+				} else {
+//					return obstaclePtr->opacity;
+					return 0.0;
+				}
+			} else {
+				// Point is inside this obstacle, ignore it for collision-detection later.
+				ignore = obstaclePtr;
+				break;
 			}
-			return 0.0;
-//			return obstaclePtr->opacity;
 		}
 		obstaclePtr++;
 	}
 	
+	double luminance = 0.0;
 	Lamp *lampPtr = context->lampArray;
 	for (int l = 0; l < context->lampCount; l++) {
-		luminance += _sdLuminanceForLamp (context, x, y, lampPtr);
-//		luminance = (luminance + _sdLuminanceForLamp (context, x, y, lampPtr)) / 2.0;
+		luminance += _sdLuminanceForLamp (context, x, y, lampPtr, ignore);
 		lampPtr++;
 	}
 	return luminance;
