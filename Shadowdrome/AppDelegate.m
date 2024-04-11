@@ -1059,7 +1059,8 @@ NSMutableArray<NSString *> *objectQueue = NULL;
 
 - (IBAction) saveBitmap: (id) sender {
 	NSSavePanel *panel = [NSSavePanel savePanel];
-	panel.nameFieldStringValue = [NSString stringWithFormat: @"%s_shadows.png", shadowContext->name];
+	[panel setAllowedContentTypes: [NSArray arrayWithObject: UTTypePNG]];
+	panel.nameFieldStringValue = [NSString stringWithFormat: @"%s_shadows", shadowContext->name];
 	[panel beginWithCompletionHandler: ^(NSModalResponse result) {
 		if (result == NSModalResponseOK) {
 			[self _writeFullsizeBitmapDataToURL: [panel URL]];

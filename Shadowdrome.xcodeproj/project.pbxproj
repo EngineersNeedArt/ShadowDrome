@@ -11,14 +11,14 @@
 		2655BB742B99EC9E007E26F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2655BB732B99EC9E007E26F4 /* Assets.xcassets */; };
 		2655BB772B99EC9E007E26F4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2655BB752B99EC9E007E26F4 /* MainMenu.xib */; };
 		2655BB792B99EC9E007E26F4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2655BB782B99EC9E007E26F4 /* main.m */; };
-		2655BB822B99ECC7007E26F4 /* BitmapContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 2655BB802B99ECC7007E26F4 /* BitmapContext.c */; };
 		267090B12BAA4D5300EB10F4 /* cJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = 267090B02BAA4D5300EB10F4 /* cJSON.c */; };
-		267090B42BAA4E8700EB10F4 /* ShadowContextJSONLayer.c in Sources */ = {isa = PBXBuildFile; fileRef = 267090B32BAA4E8700EB10F4 /* ShadowContextJSONLayer.c */; };
-		26A78C672B9FE8D3008C2EBA /* Obstacle.c in Sources */ = {isa = PBXBuildFile; fileRef = 26A78C652B9FE8D3008C2EBA /* Obstacle.c */; };
-		26B858682B9CAC30003B278C /* ShadowContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 26B858672B9CAC30003B278C /* ShadowContext.c */; };
-		26B8586B2B9CAE17003B278C /* Lamp.c in Sources */ = {isa = PBXBuildFile; fileRef = 26B8586A2B9CAE17003B278C /* Lamp.c */; };
 		26B8C8B12BC2437500608215 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26B8C8B02BC2437500608215 /* UniformTypeIdentifiers.framework */; };
 		26B8C8B62BC5B12800608215 /* OverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 26B8C8B52BC5B12800608215 /* OverlayView.m */; };
+		26B8C8C22BC78C4100608215 /* BitmapContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 26B8C8B72BC78C4100608215 /* BitmapContext.c */; };
+		26B8C8C32BC78C4100608215 /* Lamp.c in Sources */ = {isa = PBXBuildFile; fileRef = 26B8C8B92BC78C4100608215 /* Lamp.c */; };
+		26B8C8C42BC78C4100608215 /* Obstacle.c in Sources */ = {isa = PBXBuildFile; fileRef = 26B8C8BB2BC78C4100608215 /* Obstacle.c */; };
+		26B8C8C52BC78C4100608215 /* ShadowContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 26B8C8BD2BC78C4100608215 /* ShadowContext.c */; };
+		26B8C8C62BC78C4100608215 /* ShadowContextJSONLayer.c in Sources */ = {isa = PBXBuildFile; fileRef = 26B8C8BF2BC78C4100608215 /* ShadowContextJSONLayer.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,23 +29,23 @@
 		2655BB762B99EC9E007E26F4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		2655BB782B99EC9E007E26F4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2655BB7A2B99EC9E007E26F4 /* Shadowdrome.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Shadowdrome.entitlements; sourceTree = "<group>"; };
-		2655BB802B99ECC7007E26F4 /* BitmapContext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = BitmapContext.c; sourceTree = "<group>"; };
-		2655BB812B99ECC7007E26F4 /* BitmapContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BitmapContext.h; sourceTree = "<group>"; };
 		267090AF2BAA4D5300EB10F4 /* cJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cJSON.h; sourceTree = "<group>"; };
 		267090B02BAA4D5300EB10F4 /* cJSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cJSON.c; sourceTree = "<group>"; };
-		267090B22BAA4E8700EB10F4 /* ShadowContextJSONLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowContextJSONLayer.h; sourceTree = "<group>"; };
-		267090B32BAA4E8700EB10F4 /* ShadowContextJSONLayer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ShadowContextJSONLayer.c; sourceTree = "<group>"; };
-		26A78C652B9FE8D3008C2EBA /* Obstacle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Obstacle.c; sourceTree = "<group>"; };
-		26A78C662B9FE8D3008C2EBA /* Obstacle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Obstacle.h; sourceTree = "<group>"; };
-		26B858662B9CAC30003B278C /* ShadowContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShadowContext.h; sourceTree = "<group>"; };
-		26B858672B9CAC30003B278C /* ShadowContext.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ShadowContext.c; sourceTree = "<group>"; };
-		26B858692B9CAE17003B278C /* Lamp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Lamp.h; sourceTree = "<group>"; };
-		26B8586A2B9CAE17003B278C /* Lamp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Lamp.c; sourceTree = "<group>"; };
 		26B8C8AC2BC1ACF700608215 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		26B8C8AE2BC236A800608215 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		26B8C8B02BC2437500608215 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
 		26B8C8B42BC5B12800608215 /* OverlayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OverlayView.h; sourceTree = "<group>"; };
 		26B8C8B52BC5B12800608215 /* OverlayView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OverlayView.m; sourceTree = "<group>"; };
+		26B8C8B72BC78C4100608215 /* BitmapContext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = BitmapContext.c; sourceTree = "<group>"; };
+		26B8C8B82BC78C4100608215 /* BitmapContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BitmapContext.h; sourceTree = "<group>"; };
+		26B8C8B92BC78C4100608215 /* Lamp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lamp.c; sourceTree = "<group>"; };
+		26B8C8BA2BC78C4100608215 /* Lamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lamp.h; sourceTree = "<group>"; };
+		26B8C8BB2BC78C4100608215 /* Obstacle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Obstacle.c; sourceTree = "<group>"; };
+		26B8C8BC2BC78C4100608215 /* Obstacle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Obstacle.h; sourceTree = "<group>"; };
+		26B8C8BD2BC78C4100608215 /* ShadowContext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ShadowContext.c; sourceTree = "<group>"; };
+		26B8C8BE2BC78C4100608215 /* ShadowContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowContext.h; sourceTree = "<group>"; };
+		26B8C8BF2BC78C4100608215 /* ShadowContextJSONLayer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ShadowContextJSONLayer.c; sourceTree = "<group>"; };
+		26B8C8C02BC78C4100608215 /* ShadowContextJSONLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowContextJSONLayer.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,23 +83,14 @@
 				26B8C8AC2BC1ACF700608215 /* Info.plist */,
 				2655BB702B99EC9E007E26F4 /* AppDelegate.h */,
 				2655BB712B99EC9E007E26F4 /* AppDelegate.m */,
-				2655BB732B99EC9E007E26F4 /* Assets.xcassets */,
-				2655BB812B99ECC7007E26F4 /* BitmapContext.h */,
-				2655BB802B99ECC7007E26F4 /* BitmapContext.c */,
 				267090AF2BAA4D5300EB10F4 /* cJSON.h */,
 				267090B02BAA4D5300EB10F4 /* cJSON.c */,
-				26B858692B9CAE17003B278C /* Lamp.h */,
-				26B8586A2B9CAE17003B278C /* Lamp.c */,
-				26A78C662B9FE8D3008C2EBA /* Obstacle.h */,
-				26A78C652B9FE8D3008C2EBA /* Obstacle.c */,
 				26B8C8B42BC5B12800608215 /* OverlayView.h */,
 				26B8C8B52BC5B12800608215 /* OverlayView.m */,
-				26B858662B9CAC30003B278C /* ShadowContext.h */,
-				26B858672B9CAC30003B278C /* ShadowContext.c */,
-				267090B22BAA4E8700EB10F4 /* ShadowContextJSONLayer.h */,
-				267090B32BAA4E8700EB10F4 /* ShadowContextJSONLayer.c */,
-				2655BB752B99EC9E007E26F4 /* MainMenu.xib */,
 				2655BB782B99EC9E007E26F4 /* main.m */,
+				26B8C8C12BC78C4100608215 /* ShadowTracerSrc */,
+				2655BB752B99EC9E007E26F4 /* MainMenu.xib */,
+				2655BB732B99EC9E007E26F4 /* Assets.xcassets */,
 				2655BB7A2B99EC9E007E26F4 /* Shadowdrome.entitlements */,
 			);
 			path = Shadowdrome;
@@ -112,6 +103,23 @@
 				26B8C8AE2BC236A800608215 /* CoreServices.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		26B8C8C12BC78C4100608215 /* ShadowTracerSrc */ = {
+			isa = PBXGroup;
+			children = (
+				26B8C8B82BC78C4100608215 /* BitmapContext.h */,
+				26B8C8B72BC78C4100608215 /* BitmapContext.c */,
+				26B8C8BA2BC78C4100608215 /* Lamp.h */,
+				26B8C8B92BC78C4100608215 /* Lamp.c */,
+				26B8C8BC2BC78C4100608215 /* Obstacle.h */,
+				26B8C8BB2BC78C4100608215 /* Obstacle.c */,
+				26B8C8BE2BC78C4100608215 /* ShadowContext.h */,
+				26B8C8BD2BC78C4100608215 /* ShadowContext.c */,
+				26B8C8C02BC78C4100608215 /* ShadowContextJSONLayer.h */,
+				26B8C8BF2BC78C4100608215 /* ShadowContextJSONLayer.c */,
+			);
+			path = ShadowTracerSrc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -183,15 +191,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26B8586B2B9CAE17003B278C /* Lamp.c in Sources */,
 				2655BB792B99EC9E007E26F4 /* main.m in Sources */,
-				26A78C672B9FE8D3008C2EBA /* Obstacle.c in Sources */,
-				267090B42BAA4E8700EB10F4 /* ShadowContextJSONLayer.c in Sources */,
-				2655BB822B99ECC7007E26F4 /* BitmapContext.c in Sources */,
+				26B8C8C62BC78C4100608215 /* ShadowContextJSONLayer.c in Sources */,
+				26B8C8C22BC78C4100608215 /* BitmapContext.c in Sources */,
+				26B8C8C32BC78C4100608215 /* Lamp.c in Sources */,
 				267090B12BAA4D5300EB10F4 /* cJSON.c in Sources */,
+				26B8C8C42BC78C4100608215 /* Obstacle.c in Sources */,
+				26B8C8C52BC78C4100608215 /* ShadowContext.c in Sources */,
 				2655BB722B99EC9E007E26F4 /* AppDelegate.m in Sources */,
 				26B8C8B62BC5B12800608215 /* OverlayView.m in Sources */,
-				26B858682B9CAC30003B278C /* ShadowContext.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
