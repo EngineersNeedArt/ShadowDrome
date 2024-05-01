@@ -40,6 +40,11 @@ void bmContextGetPixel (BMContext *context, int x, int y, unsigned char *red, un
 void bmContextSetPixel (BMContext *context, int x, int y, unsigned char red, unsigned char green,
 		unsigned char blue, unsigned char alpha);
 
+/// Returns largest 'count' for any histogram "bucket", caller can use value to scale the data.
+/// Histogram data is returned in 'buffer' for the 'channel' (a number from 0 to 3 to indicate 0=red, 1=green, 2=blue or 3=alpha histogram).
+/// Caller must pass 'buffer', a pointer 256 x sizeof (insigned int) bytes of storage. Function fills in count of pixels for each of 256 "buckets".
+unsigned int bmContextHistogram (BMContext *context, int channel, unsigned int *buffer);
+
 /// Free bitmap context.
 void bmContextFree (BMContext *context);
 

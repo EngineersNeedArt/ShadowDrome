@@ -23,6 +23,8 @@
 @property (strong) IBOutlet NSTableView *contextTableView;
 @property (strong) IBOutlet NSTabView *detailTabView;
 
+@property (strong) IBOutlet NSImageView *histogramImageView;
+
 @property (strong) IBOutlet NSTextField *lampXTextField;
 @property (strong) IBOutlet NSTextField *lampYTextField;
 @property (strong) IBOutlet NSTextField *lampRadiusTextField;
@@ -364,6 +366,64 @@ NSMutableArray<NSString *> *objectQueue = NULL;
 	CGDataProviderRelease (provider);
 }
 
+- (void) _generateHistogram {
+	size_t bufferSize = sizeof (unsigned int) * 256;
+	unsigned int *buffer = malloc (bufferSize);
+	memset (buffer, 0, bufferSize);
+	(void) bmContextHistogram (bitmap, 3, buffer);
+	
+	NSRect frame = [_histogramImageView frame];
+	NSImage *image = [[NSImage alloc] initWithSize: frame.size];
+	[image lockFocus];
+	int column = 0;
+	int stride = 256 / frame.size.width;
+	
+	// Find largest column total for vertical scaling purposes.
+	long largestColumnTotal = 0L;
+	do {
+		long columnTotal = 0L;
+		for (int c = column; c < (column + stride); c++) {
+			columnTotal += buffer[c];
+		}
+		if (columnTotal > largestColumnTotal) {
+			largestColumnTotal = columnTotal;
+		}
+		column += stride;
+	} while (column < 256);
+	
+	NSGraphicsContext *graphicsContext = [NSGraphicsContext currentContext];
+	CGContextRef context = [graphicsContext CGContext];
+	CGContextSetLineWidth (context, 1.0);
+	column = 0;
+	int columnIndex = 0;
+	do {
+		long columnTotal = 0;
+		for (int c = column; c < (column + stride); c++) {
+			columnTotal += buffer[c];
+		}
+		CGFloat barHeight = (CGFloat) columnTotal * frame.size.height / (CGFloat) largestColumnTotal;
+		
+		// Clear column white.
+		CGContextSetRGBStrokeColor (context, 1.0, 1.0, 1.0, 1.0);
+		CGContextMoveToPoint (context, columnIndex, 0);
+		CGContextAddLineToPoint (context, columnIndex, frame.size.height);
+		CGContextStrokePath (context);
+		
+		CGContextSetRGBStrokeColor (context, 0.0, 0.0, 0.0, 1.0);
+		CGContextMoveToPoint (context, columnIndex, 0);
+		CGContextAddLineToPoint (context, columnIndex, barHeight);
+		CGContextStrokePath (context);
+		
+		column += stride;
+		columnIndex += 1;
+	} while (column < 256);
+	
+	[image unlockFocus];
+	_histogramImageView.image = image;
+	
+	free (buffer);
+}
+
 - (void) _renderCore: (BMContext *) bitmap completion: (void (^)(BOOL success)) completionBlock {
 	// Create a dispatch group to keep track of completion
 	dispatch_group_t group = dispatch_group_create ();
@@ -440,6 +500,7 @@ NSMutableArray<NSString *> *objectQueue = NULL;
 	[self _renderToBitmap: bitmap async: YES completion: ^(BOOL success) {
 		if (success) {
 			[self _displayRenderedBitmap];
+			[self _generateHistogram];
 			[[self overlayView] setNeedsDisplay: YES];
 		}
 	}];

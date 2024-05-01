@@ -2,6 +2,7 @@
 //  BitmapContext.c
 //
 
+#include <limits.h>
 #include <stdlib.h>
 #include "BitmapContext.h"
 
@@ -105,6 +106,35 @@ void bmContextSetPixel (BMContext *context, int x, int y, unsigned char red, uns
 		*pixelPtr = alpha;
 		pixelPtr++;
 	}
+}
+
+unsigned int bmContextHistogram (BMContext *context, int channel, unsigned int *buffer) {
+	// Param check.
+	if ((context == NULL) || (channel < 0) || (channel > 3) || (buffer == NULL)) {
+		return 0;
+	}
+	
+	unsigned int largestCount = 0;
+	unsigned int pixelCount = context->width * context->height;
+	unsigned int index = 0;
+	unsigned char *component = context->buffer;
+	while (index < pixelCount) {
+		// Bump bucket count.
+		unsigned char value = *(component + channel);
+		unsigned int count = buffer [value];
+		if (count > largestCount) {
+			largestCount = count;
+		}
+		if (count < UINT_MAX) {
+			buffer [value] = count + 1;
+		}
+		
+		// Advance pointer to start of next pixel.
+		component += 4;
+		index++;
+	}
+	
+	return largestCount;
 }
 
 void bmContextFree (BMContext *context) {
